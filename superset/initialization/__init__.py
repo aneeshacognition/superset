@@ -22,6 +22,7 @@ import os
 import sys
 from typing import Any, Callable, TYPE_CHECKING
 
+import sqlalchemy as sa
 import wtforms_json
 from colorama import Fore, Style
 from deprecation import deprecated
@@ -35,7 +36,6 @@ from flask_appbuilder.utils.base import get_safe_redirect
 from flask_babel import lazy_gettext as _, refresh
 from flask_compress import Compress
 from flask_session import Session
-from sqlalchemy import text
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from superset.commands.database.exceptions import DatabaseInvalidError
@@ -815,7 +815,8 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         try:
             with self.superset_app.app_context():
                 # Simple connection test
-                db.engine.execute(text("SELECT 1"))
+                with db.engine.connect() as connection:
+                    connection.execute(sa.text("SELECT 1"))
         except Exception:
             db_uri = self.database_uri
 
