@@ -25,7 +25,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
-from authlib.jose.errors import BadSignatureError, DecodeError, ExpiredTokenError
+from joserfc.errors import BadSignatureError, DecodeError, ExpiredTokenError
 
 from superset.mcp_service.jwt_verifier import (
     _auth_error_handler,
@@ -129,9 +129,9 @@ async def test_signature_verification_failed(hs256_verifier):
     )
 
     with patch.object(
-        hs256_verifier.jwt,
-        "decode",
-        side_effect=BadSignatureError(result=None),
+        hs256_verifier,
+        "_decode_jwt",
+        side_effect=BadSignatureError(),
     ):
         result = await hs256_verifier.load_access_token(token)
 
@@ -160,7 +160,7 @@ async def test_expired_token(hs256_verifier):
         "exp": expired_time,
     }
 
-    with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+    with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
         result = await hs256_verifier.load_access_token(token)
 
     assert result is None
@@ -183,7 +183,7 @@ async def test_token_with_future_nbf_rejected(hs256_verifier):
     }
     token = _make_token({"alg": "HS256", "typ": "JWT"}, claims)
 
-    with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+    with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
         result = await hs256_verifier.load_access_token(token)
 
     assert result is None
@@ -212,7 +212,7 @@ async def test_issuer_mismatch(hs256_verifier):
         "exp": int(time.time()) + 3600,
     }
 
-    with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+    with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
         result = await hs256_verifier.load_access_token(token)
 
     assert result is None
@@ -242,7 +242,7 @@ async def test_audience_mismatch(hs256_verifier):
         "exp": int(time.time()) + 3600,
     }
 
-    with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+    with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
         result = await hs256_verifier.load_access_token(token)
 
     assert result is None
@@ -276,7 +276,7 @@ async def test_missing_required_scopes(hs256_verifier):
         "scope": "read",
     }
 
-    with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+    with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
         result = await hs256_verifier.load_access_token(token)
 
     assert result is None
@@ -306,7 +306,7 @@ async def test_valid_token(hs256_verifier):
         "exp": future_exp,
     }
 
-    with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+    with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
         result = await hs256_verifier.load_access_token(token)
 
     assert result is not None
@@ -332,7 +332,7 @@ async def test_valid_token_logs_success(hs256_verifier, caplog):
     }
 
     with caplog.at_level(logging.INFO, logger="superset.mcp_service.jwt_verifier"):
-        with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+        with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
             result = await hs256_verifier.load_access_token(token)
 
     assert result is not None
@@ -365,7 +365,7 @@ async def test_success_log_tolerates_non_orderable_scopes(hs256_verifier, caplog
 
     with caplog.at_level(logging.INFO, logger="superset.mcp_service.jwt_verifier"):
         with (
-            patch.object(hs256_verifier.jwt, "decode", return_value=claims),
+            patch.object(hs256_verifier, "_decode_jwt", return_value=claims),
             patch.object(hs256_verifier, "_extract_scopes", return_value=["read", 1]),
         ):
             await hs256_verifier.load_access_token(token)
@@ -397,7 +397,7 @@ async def test_token_without_expiration_rejected(hs256_verifier):
         "aud": "test-audience",
     }
 
-    with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+    with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
         result = await hs256_verifier.load_access_token(token)
 
     assert result is None
@@ -416,8 +416,8 @@ async def test_decode_error(hs256_verifier):
     )
 
     with patch.object(
-        hs256_verifier.jwt,
-        "decode",
+        hs256_verifier,
+        "_decode_jwt",
         side_effect=DecodeError("bad token"),
     ):
         result = await hs256_verifier.load_access_token(token)
@@ -530,7 +530,7 @@ async def test_contextvar_cleared_on_success(hs256_verifier):
         "exp": future_exp,
     }
 
-    with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+    with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
         result = await hs256_verifier.load_access_token(token)
 
     assert result is not None
@@ -710,7 +710,7 @@ async def test_audience_mismatch_list_audience():
         "exp": int(time.time()) + 3600,
     }
 
-    with patch.object(verifier.jwt, "decode", return_value=claims):
+    with patch.object(verifier, "_decode_jwt", return_value=claims):
         result = await verifier.load_access_token(token)
 
     assert result is None
@@ -744,7 +744,7 @@ async def test_issuer_mismatch_list_issuer():
         "exp": int(time.time()) + 3600,
     }
 
-    with patch.object(verifier.jwt, "decode", return_value=claims):
+    with patch.object(verifier, "_decode_jwt", return_value=claims):
         result = await verifier.load_access_token(token)
 
     assert result is None
@@ -790,7 +790,7 @@ async def test_warning_logs_never_contain_claim_values(hs256_verifier, caplog):
     }
 
     with caplog.at_level(logging.DEBUG, logger="superset.mcp_service.jwt_verifier"):
-        with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+        with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
             await hs256_verifier.load_access_token(token)
 
     # WARNING logs must not contain claim values
@@ -829,7 +829,7 @@ async def test_hs256_secret_never_logged(hs256_verifier, caplog):
     }
 
     with caplog.at_level(logging.DEBUG, logger="superset.mcp_service.jwt_verifier"):
-        with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+        with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
             await hs256_verifier.load_access_token(token)
 
     # The signing value must never appear at ANY log level
@@ -852,9 +852,9 @@ async def test_expired_token_during_decode(hs256_verifier):
     )
 
     with patch.object(
-        hs256_verifier.jwt,
-        "decode",
-        side_effect=ExpiredTokenError(),
+        hs256_verifier,
+        "_decode_jwt",
+        side_effect=ExpiredTokenError("exp"),
     ):
         result = await hs256_verifier.load_access_token(token)
 
@@ -882,7 +882,7 @@ async def test_catch_all_exception_sets_generic_reason(hs256_verifier):
         "exp": int(time.time()) + 3600,
     }
 
-    with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+    with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
         with patch.object(
             hs256_verifier,
             "_extract_scopes",
@@ -919,7 +919,7 @@ async def test_successful_auth_logged_with_safe_metadata(hs256_verifier, caplog)
     }
 
     with caplog.at_level(logging.INFO, logger="superset.mcp_service.jwt_verifier"):
-        with patch.object(hs256_verifier.jwt, "decode", return_value=claims):
+        with patch.object(hs256_verifier, "_decode_jwt", return_value=claims):
             result = await hs256_verifier.load_access_token(token)
 
     assert result is not None
