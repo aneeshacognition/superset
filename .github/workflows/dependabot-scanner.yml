@@ -7,8 +7,8 @@ name: Dependabot backlog scanner (Devin)
 # the v3 API so the orchestrator picks the work up immediately.
 #
 # Required repository secrets (Settings > Secrets and variables > Actions):
-#   DEVIN_API_KEY  - service-user token with the ManageOrgSessions permission
-#   DEVIN_ORG_ID   - organization ID (prefix: org-)
+#   DEVIN_API     - service-user token with the ManageOrgSessions permission
+#   DEVIN_ORG_ID  - organization ID (prefix: org-)
 # Optional repository variables (Settings > Secrets and variables > Actions):
 #   UPSTREAM_REPO       - upstream to scan (default: apache/superset)
 #   STUCK_MIN_FAILURES  - failing checks needed to call a PR stuck (default: 1)
@@ -39,10 +39,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.11"
 
@@ -57,7 +59,7 @@ jobs:
           STUCK_MIN_FAILURES: ${{ vars.STUCK_MIN_FAILURES || '1' }}
           MAX_ISSUES_PER_RUN: ${{ vars.MAX_ISSUES_PER_RUN || '10' }}
           DEVIN_MAX_ACU: ${{ vars.DEVIN_MAX_ACU || '' }}
-          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API }}
           DEVIN_ORG_ID: ${{ secrets.DEVIN_ORG_ID }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         run: python .github/scripts/dependabot_scanner.py
