@@ -62,8 +62,6 @@ backoff==2.2.1
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
-backports-tarfile==1.2.0
-    # via jaraco-context
 bcrypt==4.3.0
     # via
     #   -c requirements/base-constraint.txt
@@ -302,7 +300,7 @@ flask-session==0.8.0
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
-flask-sqlalchemy==2.5.1
+flask-sqlalchemy==3.1.1
     # via
     #   -c requirements/base-constraint.txt
     #   flask-appbuilder
@@ -433,9 +431,7 @@ idna==3.15
     #   trio
     #   url-normalize
 importlib-metadata==8.7.0
-    # via
-    #   keyring
-    #   opentelemetry-api
+    # via opentelemetry-api
 importlib-resources==6.5.2
     # via prophet
 iniconfig==2.0.0
@@ -961,7 +957,7 @@ sortedcontainers==2.4.0
     # via
     #   -c requirements/base-constraint.txt
     #   trio
-sqlalchemy==1.4.54
+sqlalchemy==2.0.51
     # via
     #   -c requirements/base-constraint.txt
     #   alembic
@@ -1046,6 +1042,7 @@ typing-extensions==4.15.0
     #   referencing
     #   selenium
     #   shillelagh
+    #   sqlalchemy
     #   starlette
     #   typing-inspection
 typing-inspection==0.4.1
