@@ -41,7 +41,6 @@ from fastmcp.server.auth.providers.jwt import JWTVerifier
 from joserfc import jwk as _joserfc_jwk, jwt as _joserfc_jwt
 from joserfc.errors import (
     BadSignatureError,
-    DecodeError,
     ExpiredTokenError,
     JoseError,
 )
@@ -488,7 +487,8 @@ class DetailedJWTVerifier(MCPJWTVerifier):
         """
         # self.algorithm is guaranteed non-None by the caller (the
         # "No signing algorithm pinned" check rejects before reaching decode).
-        alg: str = self.algorithm  # type: ignore[assignment]
+        assert self.algorithm is not None
+        alg: str = self.algorithm
         if alg.startswith("HS"):
             key_type = "oct"
         elif alg.startswith(("RS", "PS")):
