@@ -18,41 +18,58 @@
  */
 const packageConfig = require('./package');
 
+// Babel 8 removed NodePath.prototype.hoist, which @emotion/babel-plugin still
+// calls.  Polyfill it as a no-op so the plugin runs without error.
+// Must patch the @babel/traverse resolved from @babel/core (Babel 8's copy).
+try {
+  const traversePath = require.resolve('@babel/traverse', {
+    paths: [require.resolve('@babel/core')],
+  });
+  const { NodePath } = require(traversePath);
+  if (NodePath && !NodePath.prototype.hoist) {
+    NodePath.prototype.hoist = function () {};
+  }
+} catch {
+  // @babel/traverse not resolvable – nothing to patch
+}
+
 module.exports = {
   sourceMaps: true,
   sourceType: 'module',
   retainLines: true,
+  assumptions: {
+    iterableIsArray: true,
+    mutableTemplateObject: true,
+    noClassCalls: true,
+    noDocumentAll: true,
+    noNewArrows: true,
+    objectRestNoSymbols: true,
+    privateFieldsAsProperties: true,
+    pureGetters: true,
+    setClassMethods: true,
+    setComputedProperties: true,
+    setPublicClassFields: true,
+    setSpreadProperties: true,
+    skipForOfIteratorClosing: true,
+    superIsCallableConstructor: true,
+  },
   presets: [
     [
       '@babel/preset-env',
       {
-        useBuiltIns: 'usage',
-        corejs: 3,
-        loose: true,
         modules: false,
         shippedProposals: true,
         targets: packageConfig.browserslist,
       },
     ],
-    [
-      '@babel/preset-react',
-      {
-        development: process.env.BABEL_ENV === 'development',
-        runtime: 'automatic',
-      },
-    ],
-    '@babel/preset-typescript',
+    ['@babel/preset-typescript', { onlyRemoveTypeImports: false }],
   ],
   plugins: [
-    'lodash',
-    '@babel/plugin-syntax-dynamic-import',
-    '@babel/plugin-transform-export-namespace-from',
-    ['@babel/plugin-transform-class-properties', { loose: true }],
-    '@babel/plugin-transform-class-static-block',
-    ['@babel/plugin-transform-optional-chaining', { loose: true }],
-    ['@babel/plugin-transform-private-methods', { loose: true }],
-    ['@babel/plugin-transform-nullish-coalescing-operator', { loose: true }],
-    ['@babel/plugin-transform-runtime', { corejs: 3 }],
+    '@babel/plugin-transform-runtime',
+    [
+      'babel-plugin-polyfill-corejs3',
+      { method: 'usage-global', version: '3.43' },
+    ],
     [
       '@emotion/babel-plugin',
       {
@@ -60,6 +77,27 @@ module.exports = {
         labelFormat: '[local]',
       },
     ],
+    // @emotion/babel-plugin adds the jsx parser plugin before preset-typescript
+    // adds typescript, so for plain .ts files jsx leaks in and the Babel 8
+    // parser chokes on TypeScript generics like <T extends unknown>().
+    // Strip jsx for .ts-only files; .tsx/.jsx/.js keep it.
+    function stripJsxForTsFiles() {
+      return {
+        name: 'strip-jsx-for-ts-files',
+        manipulateOptions(opts, parserOpts) {
+          const f = opts.filename || '';
+          if (
+            f.endsWith('.ts') &&
+            !f.endsWith('.d.ts') &&
+            !f.endsWith('.tsx')
+          ) {
+            parserOpts.plugins = parserOpts.plugins.filter(
+              p => (Array.isArray(p) ? p[0] : p) !== 'jsx',
+            );
+          }
+        },
+      };
+    },
   ],
   env: {
     // Setup a different config for tests as they run in node instead of a browser
@@ -68,27 +106,16 @@ module.exports = {
         [
           '@babel/preset-env',
           {
-            useBuiltIns: 'usage',
-            corejs: 3,
-            loose: true,
             shippedProposals: true,
             modules: 'auto',
             targets: { node: 'current' },
           },
         ],
-        [
-          '@babel/preset-react',
-          {
-            development: process.env.BABEL_ENV === 'development',
-            runtime: 'automatic',
-          },
-        ],
-        '@babel/preset-typescript',
+        ['@babel/preset-typescript', { onlyRemoveTypeImports: false }],
       ],
       plugins: [
         'babel-plugin-dynamic-import-node',
         '@babel/plugin-transform-modules-commonjs',
-        '@babel/plugin-transform-export-namespace-from',
       ],
     },
     // build instrumented code for testing code coverage with Cypress
@@ -123,6 +150,22 @@ module.exports = {
     },
   },
   overrides: [
+    {
+      // Apply preset-react only to files that can contain JSX (.jsx, .tsx, .js)
+      // but NOT to plain .ts files, where Babel 8's JSX parser plugin would
+      // conflict with TypeScript generic syntax (e.g. <T = unknown>() => ...).
+      test: filename =>
+        !filename || !filename.endsWith('.ts') || filename.endsWith('.tsx'),
+      presets: [
+        [
+          '@babel/preset-react',
+          {
+            development: process.env.BABEL_ENV === 'development',
+            runtime: 'automatic',
+          },
+        ],
+      ],
+    },
     {
       test: './plugins/plugin-chart-handlebars/node_modules/just-handlebars-helpers/*',
       sourceType: 'unambiguous',

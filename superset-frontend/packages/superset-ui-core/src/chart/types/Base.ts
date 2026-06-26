@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { BinaryQueryObjectFilterClause, ExtraFormData } from '../../query';
-import { JsonObject } from '../..';
+import type { BinaryQueryObjectFilterClause, ExtraFormData } from '../../query';
+import type { JsonObject } from '../..';
 
 export type HandlerFunction = (...args: unknown[]) => void;
 

@@ -18,8 +18,8 @@
  * under the License.
  */
 
-import { GenericDataType } from '@apache-superset/core/common';
-import { QueryFormColumn } from './QueryFormData';
+import type { GenericDataType } from '@apache-superset/core/common';
+import type { QueryFormColumn } from './QueryFormData';
 
 export interface AdhocColumn {
   hasCustomLabel?: boolean;

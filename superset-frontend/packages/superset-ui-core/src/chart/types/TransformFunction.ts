@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import {
+import type {
   QueryFormData,
   QueryContext,
   SetDataMaskHook,

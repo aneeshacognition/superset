@@ -21,7 +21,7 @@ import buildQueryObject from './buildQueryObject';
 import DatasourceKey from './DatasourceKey';
 import { QueryFieldAliases, QueryFormData } from './types/QueryFormData';
 import { QueryContext, QueryObject } from './types/Query';
-import { SetDataMaskHook } from '../chart';
+import type { SetDataMaskHook } from '../chart';
 import { JsonObject } from '../connection';
 import { normalizeTimeColumn } from './normalizeTimeColumn';
 import { isXAxisSet } from './getXAxis';
