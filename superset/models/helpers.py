@@ -2729,7 +2729,7 @@ class ExploreMixin:  # pylint: disable=too-many-public-methods
 
                 # Create CASE expression for groupby
                 case_expr = sa.case(
-                    [(condition, gby_expr)],
+                    (condition, gby_expr),
                     else_=sa.literal("Others"),
                 )
                 # Don't apply make_sqla_column_compatible to GROUP BY expressions.

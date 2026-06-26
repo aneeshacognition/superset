@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from types import SimpleNamespace
 from unittest import mock
 from unittest.mock import MagicMock
 
@@ -156,7 +157,7 @@ def test_engine_migration_cbc_to_gcm_re_encrypts() -> None:
 
     migrator = _engine_migrator(AesGcmEngine)
     conn = MagicMock()
-    row = {"id": 1, "password": ciphertext}
+    row = SimpleNamespace(_mapping={"id": 1, "password": ciphertext})
     stats = ReEncryptStats()
 
     migrator._re_encrypt_row(  # noqa: SLF001
@@ -183,7 +184,7 @@ def test_engine_migration_idempotent_for_already_target() -> None:
 
     migrator = _engine_migrator(AesGcmEngine)
     conn = MagicMock()
-    row = {"id": 1, "password": gcm_value}
+    row = SimpleNamespace(_mapping={"id": 1, "password": gcm_value})
     stats = ReEncryptStats()
 
     migrator._re_encrypt_row(  # noqa: SLF001
@@ -206,7 +207,7 @@ def test_engine_migration_reads_cbc_after_config_already_flipped() -> None:
 
     migrator = _engine_migrator(AesGcmEngine)
     conn = MagicMock()
-    row = {"id": 1, "password": cbc_value}
+    row = SimpleNamespace(_mapping={"id": 1, "password": cbc_value})
     stats = ReEncryptStats()
 
     migrator._re_encrypt_row(  # noqa: SLF001
@@ -231,7 +232,7 @@ def test_engine_migration_gcm_to_cbc_rolls_back() -> None:
 
     migrator = _engine_migrator(AesEngine)
     conn = MagicMock()
-    row = {"id": 1, "password": gcm_value}
+    row = SimpleNamespace(_mapping={"id": 1, "password": gcm_value})
     stats = ReEncryptStats()
 
     migrator._re_encrypt_row(  # noqa: SLF001
@@ -272,7 +273,7 @@ def test_rollback_authenticated_probe_wins_over_spurious_cbc_skip() -> None:
     spurious_target.process_bind_param.return_value = b"new-cbc-ciphertext"
 
     conn = MagicMock()
-    row = {"id": 1, "password": gcm_value}
+    row = SimpleNamespace(_mapping={"id": 1, "password": gcm_value})
     stats = ReEncryptStats()
 
     with mock.patch.object(migrator, "_target_type", return_value=spurious_target):
@@ -302,7 +303,7 @@ def test_combined_key_rotation_and_engine_migration() -> None:
     migrator._previous_secret_key = old_key  # noqa: SLF001  # rotate key too
 
     conn = MagicMock()
-    row = {"id": 1, "password": old_value}
+    row = SimpleNamespace(_mapping={"id": 1, "password": old_value})
     stats = ReEncryptStats()
 
     migrator._re_encrypt_row(  # noqa: SLF001
@@ -346,7 +347,7 @@ def test_key_rotation_for_aes_gcm_column() -> None:
 
     migrator = _key_rotation_migrator(previous_secret_key=old_key)
     conn = MagicMock()
-    row = {"id": 1, "password": old_value}
+    row = SimpleNamespace(_mapping={"id": 1, "password": old_value})
     stats = ReEncryptStats()
 
     migrator._re_encrypt_row(  # noqa: SLF001
@@ -362,7 +363,7 @@ def test_engine_migration_unreadable_value_counts_as_failure() -> None:
     """A value no engine/key can read is a failure, not a silent pass-through."""
     migrator = _engine_migrator(AesGcmEngine)
     conn = MagicMock()
-    row = {"id": 1, "password": b"not-valid-ciphertext"}
+    row = SimpleNamespace(_mapping={"id": 1, "password": b"not-valid-ciphertext"})
     stats = ReEncryptStats()
 
     migrator._re_encrypt_row(  # noqa: SLF001

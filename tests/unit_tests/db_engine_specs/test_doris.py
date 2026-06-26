@@ -230,7 +230,11 @@ def test_get_default_catalog(
         mocker.MagicMock(IsCurrent=True, CatalogName="catalog2"),
     ]
     with database.get_sqla_engine() as engine:
-        engine.execute.return_value = rows
+        engine.connect.return_value.__enter__ = mocker.MagicMock(
+            return_value=mocker.MagicMock()
+        )
+        engine.connect.return_value.__exit__ = mocker.MagicMock(return_value=False)
+        engine.connect.return_value.__enter__.return_value.execute.return_value = rows
 
     assert DorisEngineSpec.get_default_catalog(database) == expected_catalog
 

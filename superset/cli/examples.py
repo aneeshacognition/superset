@@ -63,7 +63,7 @@ def _load_dataset(
     except Exception as e:
         from superset import db  # pylint: disable=import-outside-toplevel
 
-        db.session.rollback()
+        db.session.rollback()  # pylint: disable=consider-using-transaction
         logger.warning("Failed to load %s: %s", dataset_name, e)
 
 

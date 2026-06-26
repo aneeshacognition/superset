@@ -175,8 +175,7 @@ class CouchbaseEngineSpec(BasicParametersMixin, BaseEngineSpec):
                 port=parameters.get("port"),
                 query=query_params,
             )
-        print(uri)
-        return str(uri)
+        return uri.render_as_string(hide_password=False)
 
     @classmethod
     def get_parameters_from_uri(
