@@ -26,7 +26,7 @@ import logging
 
 from alembic import op
 from migration_utils import create_unique_constraint, drop_unique_constraint
-from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy import inspect
 
 from superset.utils.core import generic_find_uq_constraint_name
 
@@ -39,7 +39,7 @@ logger = logging.getLogger("alembic.env")
 
 def upgrade():
     bind = op.get_bind()
-    inspector = Inspector.from_engine(bind)
+    inspector = inspect(bind)
 
     # Unfortunately the DB migration that creates this constraint has a
     # try/except block, so that we can't know for sure if the constraint exists.

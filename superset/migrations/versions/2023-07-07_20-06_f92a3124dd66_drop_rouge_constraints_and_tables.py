@@ -27,14 +27,14 @@ revision = "f92a3124dd66"
 down_revision = "240d23c7f86f"
 
 from alembic import op  # noqa: E402
-from sqlalchemy.engine.reflection import Inspector  # noqa: E402
+from sqlalchemy import inspect  # noqa: E402
 
 from superset.utils.core import generic_find_fk_constraint_name  # noqa: E402
 
 
 def upgrade():
     bind = op.get_bind()
-    insp = Inspector.from_engine(bind)
+    insp = inspect(bind)
     tables = insp.get_table_names()
     conv = {"fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s"}
 

@@ -28,7 +28,6 @@ down_revision = "aea15018d53b"
 
 import sqlalchemy as sa  # noqa: E402
 from alembic import op  # noqa: E402
-from sqlalchemy.engine.reflection import Inspector  # noqa: E402
 
 
 def upgrade():
@@ -44,7 +43,7 @@ def upgrade():
         # a constraint check; we can safely remove it in that case, see
         # https://github.com/sqlalchemy/alembic/issues/699
         bind = op.get_bind()
-        inspector = Inspector.from_engine(bind)
+        inspector = sa.inspect(bind)
         check_constraints = inspector.get_check_constraints("dbs")
         for check_constraint in check_constraints:
             if "allow_csv_upload" in check_constraint["sqltext"]:

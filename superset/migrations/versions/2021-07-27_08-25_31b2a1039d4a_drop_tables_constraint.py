@@ -23,7 +23,7 @@ Create Date: 2021-07-27 08:25:20.755453
 """
 
 from alembic import op
-from sqlalchemy import engine
+from sqlalchemy import inspect
 
 from superset.utils.core import generic_find_uq_constraint_name
 
@@ -36,7 +36,7 @@ conv = {"uq": "uq_%(table_name)s_%(column_0_name)s"}
 
 def upgrade():
     bind = op.get_bind()
-    insp = engine.reflection.Inspector.from_engine(bind)
+    insp = inspect(bind)
 
     # Drop the uniqueness constraint if it exists.
 

@@ -90,7 +90,7 @@ class Validator(Base):
 
 def upgrade():
     bind = op.get_bind()
-    insp = sa.engine.reflection.Inspector.from_engine(bind)
+    insp = sa.inspect(bind)
 
     if isinstance(bind.dialect, SQLiteDialect):
         op.add_column(
@@ -173,7 +173,7 @@ def upgrade():
 
 def downgrade():
     bind = op.get_bind()
-    insp = sa.engine.reflection.Inspector.from_engine(bind)
+    insp = sa.inspect(bind)
 
     create_table(
         "sql_observers",

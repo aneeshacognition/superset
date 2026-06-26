@@ -1148,7 +1148,6 @@ class Database(CoreDatabase, AuditMixinNullable, ImportExportMixin):  # pylint: 
                 table.table,
                 meta,
                 schema=table.schema or None,
-                autoload=True,
                 autoload_with=engine,
             )
 
