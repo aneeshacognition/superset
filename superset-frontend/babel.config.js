@@ -22,16 +22,30 @@ module.exports = {
   sourceMaps: true,
   sourceType: 'module',
   retainLines: true,
+  targets: packageConfig.browserslist,
+  assumptions: {
+    arrayLikeIsIterable: true,
+    constantReexports: true,
+    ignoreFunctionLength: true,
+    ignoreToPrimitiveHint: true,
+    mutableTemplateObject: true,
+    noClassCalls: true,
+    noDocumentAll: true,
+    objectRestNoSymbols: true,
+    privateFieldsAsProperties: true,
+    pureGetters: true,
+    setClassMethods: true,
+    setComputedProperties: true,
+    setPublicClassFields: true,
+    setSpreadProperties: true,
+    skipForOfIteratorClosing: true,
+    superIsCallableConstructor: true,
+  },
   presets: [
     [
       '@babel/preset-env',
       {
-        useBuiltIns: 'usage',
-        corejs: 3,
-        loose: true,
         modules: false,
-        shippedProposals: true,
-        targets: packageConfig.browserslist,
       },
     ],
     [
@@ -45,14 +59,15 @@ module.exports = {
   ],
   plugins: [
     'lodash',
-    '@babel/plugin-syntax-dynamic-import',
     '@babel/plugin-transform-export-namespace-from',
-    ['@babel/plugin-transform-class-properties', { loose: true }],
-    '@babel/plugin-transform-class-static-block',
-    ['@babel/plugin-transform-optional-chaining', { loose: true }],
-    ['@babel/plugin-transform-private-methods', { loose: true }],
-    ['@babel/plugin-transform-nullish-coalescing-operator', { loose: true }],
-    ['@babel/plugin-transform-runtime', { corejs: 3 }],
+    '@babel/plugin-transform-runtime',
+    [
+      'babel-plugin-polyfill-corejs3',
+      {
+        method: 'usage-global',
+        version: require('core-js/package.json').version,
+      },
+    ],
     [
       '@emotion/babel-plugin',
       {
@@ -68,10 +83,6 @@ module.exports = {
         [
           '@babel/preset-env',
           {
-            useBuiltIns: 'usage',
-            corejs: 3,
-            loose: true,
-            shippedProposals: true,
             modules: 'auto',
             targets: { node: 'current' },
           },
