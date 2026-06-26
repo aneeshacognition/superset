@@ -27,6 +27,23 @@ if (typeof NodePath.prototype.hoist !== 'function') {
   NodePath.prototype.hoist = function () {};
 }
 
+// Babel 8 renamed JSX builder helpers from jSX* to jsx* (lowercase).
+// babel-plugin-jsx-remove-data-test-id still calls t.jSXOpeningElement.
+// Because @babel/types is ESM in Babel 8, require() returns a fresh CJS
+// wrapper each time, so we cannot patch the module directly.  Instead we
+// wrap the plugin and proxy the types object it receives.
+const _origRemoveTestId = require('babel-plugin-jsx-remove-data-test-id');
+const _removeTestIdFn = _origRemoveTestId.default || _origRemoveTestId;
+function removeDataTestIdCompat(api, options) {
+  const proxiedTypes = new Proxy(api.types, {
+    get(target, prop, receiver) {
+      if (prop === 'jSXOpeningElement') return target.jsxOpeningElement;
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+  return _removeTestIdFn({ ...api, types: proxiedTypes }, options);
+}
+
 module.exports = {
   sourceMaps: true,
   sourceType: 'module',
@@ -120,7 +137,7 @@ module.exports = {
     production: {
       plugins: [
         [
-          'babel-plugin-jsx-remove-data-test-id',
+          removeDataTestIdCompat,
           {
             // The plugin matches attribute names exactly (no prefix match),
             // so each data-test* attribute must be listed explicitly.
