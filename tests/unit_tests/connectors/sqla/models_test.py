@@ -135,7 +135,7 @@ def test_query_blocks_disallowed_function_on_chart_data_path(
     sqla_table = _build_sqla_table_for_query(mocker, "SELECT version()")
     with pytest.raises(SupersetDisallowedSQLFunctionException):
         sqla_table.query(_query_obj())
-    sqla_table.database.get_df.assert_not_called()  # type: ignore[attr-defined]
+    sqla_table.database.get_df.assert_not_called()
 
 
 def test_query_blocks_disallowed_table_on_chart_data_path(
@@ -152,7 +152,7 @@ def test_query_blocks_disallowed_table_on_chart_data_path(
     sqla_table = _build_sqla_table_for_query(mocker, "SELECT rolname FROM pg_authid")
     with pytest.raises(SupersetDisallowedSQLTableException):
         sqla_table.query(_query_obj())
-    sqla_table.database.get_df.assert_not_called()  # type: ignore[attr-defined]
+    sqla_table.database.get_df.assert_not_called()
 
 
 def test_query_disallowed_table_error_reports_only_matched_tables(
@@ -187,9 +187,9 @@ def test_query_allows_benign_sql_on_chart_data_path(mocker: MockerFixture) -> No
         clear=False,
     )
     sqla_table = _build_sqla_table_for_query(mocker, "SELECT id FROM my_sqla_table")
-    sqla_table.database.get_df.return_value = pd.DataFrame()  # type: ignore[attr-defined]
+    sqla_table.database.get_df.return_value = pd.DataFrame()
     result = sqla_table.query(_query_obj())
-    sqla_table.database.get_df.assert_called_once()  # type: ignore[attr-defined]
+    sqla_table.database.get_df.assert_called_once()
     assert result is not None
 
 
