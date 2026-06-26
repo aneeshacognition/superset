@@ -53,6 +53,7 @@ module.exports = {
       {
         development: process.env.BABEL_ENV === 'development',
         runtime: 'automatic',
+        importSource: '@emotion/react',
       },
     ],
     '@babel/preset-typescript',
@@ -66,13 +67,6 @@ module.exports = {
       {
         method: 'usage-global',
         version: require('core-js/package.json').version,
-      },
-    ],
-    [
-      '@emotion/babel-plugin',
-      {
-        autoLabel: 'dev-only',
-        labelFormat: '[local]',
       },
     ],
   ],
@@ -92,6 +86,7 @@ module.exports = {
           {
             development: process.env.BABEL_ENV === 'development',
             runtime: 'automatic',
+            importSource: '@emotion/react',
           },
         ],
         '@babel/preset-typescript',
