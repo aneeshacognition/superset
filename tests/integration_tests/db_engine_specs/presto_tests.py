@@ -80,7 +80,7 @@ class TestPrestoDbEngineSpec(SupersetTestCase):
         assert result == {"a", "d"}
 
     def verify_presto_column(self, column, expected_results):
-        inspector = mock.Mock()
+        inspector = mock.MagicMock()
         preparer = inspector.engine.dialect.identifier_preparer
         preparer.quote_identifier = preparer.quote = preparer.quote_schema = lambda x: (
             f'"{x}"'
@@ -609,7 +609,7 @@ class TestPrestoDbEngineSpec(SupersetTestCase):
             columns,
         )
         query_result = str(result.compile(compile_kwargs={"literal_binds": True}))
-        assert "SELECT  \nWHERE ds = '01-01-19' AND hour = 1" == query_result
+        assert "SELECT \nWHERE ds = '01-01-19' AND hour = 1" == query_result
 
     def test_query_cost_formatter(self):
         raw_cost = [

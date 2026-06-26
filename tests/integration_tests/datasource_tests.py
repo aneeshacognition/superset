@@ -110,7 +110,7 @@ def create_and_cleanup_table(table=None):
 
 class TestDatasource(SupersetTestCase):
     def setUp(self):
-        db.session.begin(subtransactions=True)
+        db.session.begin_nested()
 
     def tearDown(self):
         db.session.rollback()

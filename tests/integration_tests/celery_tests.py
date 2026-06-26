@@ -534,7 +534,9 @@ def test_teardown_with_app_context():
 
 
 def delete_tmp_view_or_table(name: str, ctas_method: CTASMethod):
-    db.get_engine().execute(text(f"DROP {ctas_method.name} IF EXISTS {name}"))
+    with db.get_engine().connect() as conn:
+        conn.execute(text(f"DROP {ctas_method.name} IF EXISTS {name}"))
+        conn.commit()
 
 
 def wait_for_success(result):
