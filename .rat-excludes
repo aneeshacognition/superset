@@ -8,6 +8,7 @@
 .eslintrc
 .eslintignore
 .flake8
+.npmrc
 .nvmrc
 .prettierrc
 .rat-excludes
@@ -15,6 +16,7 @@
 .*log
 .*pyc
 .*lock
+.*patch
 .*geojson
 DISCLAIMER
 licenses/*
