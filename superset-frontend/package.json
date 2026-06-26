@@ -422,6 +422,12 @@
     },
     "eslint-plugin-jest-dom": {
       "eslint": "$eslint"
+    },
+    "babel-plugin-jsx-remove-data-test-id": {
+      "@babel/core": "$@babel/core"
+    },
+    "ts-jest": {
+      "@babel/core": "$@babel/core"
     }
   },
   "readme": "ERROR: No README data found!",
