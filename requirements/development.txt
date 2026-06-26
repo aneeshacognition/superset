@@ -280,7 +280,7 @@ flask-compress==1.17
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
-flask-cors==6.0.2
+flask-cors==6.0.5
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -377,7 +377,7 @@ googleapis-common-protos==1.66.0
     # via
     #   google-api-core
     #   grpcio-status
-greenlet==3.5.0
+greenlet==3.5.1
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -386,7 +386,7 @@ greenlet==3.5.0
     #   sqlalchemy
 griffelib==2.0.2
     # via fastmcp-slim
-grpcio==1.71.0
+grpcio==1.81.1
     # via
     #   apache-superset
     #   google-api-core
@@ -513,6 +513,8 @@ limits==5.1.0
     # via
     #   -c requirements/base-constraint.txt
     #   flask-limiter
+lz4==4.4.5
+    # via trino
 mako==1.3.12
     # via
     #   -c requirements/base-constraint.txt
@@ -562,7 +564,7 @@ more-itertools==10.8.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-msgpack==1.0.8
+msgpack==1.2.1
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -614,6 +616,8 @@ ordered-set==4.1.0
     # via
     #   -c requirements/base-constraint.txt
     #   flask-limiter
+orjson==3.11.9
+    # via trino
 outcome==1.3.0.post0
     # via
     #   -c requirements/base-constraint.txt
@@ -772,7 +776,7 @@ pyhive==0.7.0
     # via apache-superset
 pyinstrument==5.1.2
     # via apache-superset
-pyjwt==2.12.0
+pyjwt==2.13.0
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -856,7 +860,7 @@ pyxlsb==1.0.10
     # via
     #   -c requirements/base-constraint.txt
     #   pandas
-pyyaml==6.0.2
+pyyaml==6.0.3
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -1022,7 +1026,7 @@ tqdm==4.67.1
     # via
     #   cmdstanpy
     #   prophet
-trino==0.330.0
+trino==0.337.0
     # via apache-superset
 trio==0.33.0
     # via
@@ -1043,6 +1047,7 @@ typing-extensions==4.15.0
     #   cattrs
     #   exceptiongroup
     #   fastmcp-slim
+    #   grpcio
     #   limits
     #   mcp
     #   opentelemetry-api
@@ -1157,3 +1162,4 @@ zstandard==0.23.0
     # via
     #   -c requirements/base-constraint.txt
     #   flask-compress
+    #   trino
