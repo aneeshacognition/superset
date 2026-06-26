@@ -17,7 +17,6 @@
  * under the License.
  */
 
-import { ScaleOrdinal } from 'd3-scale';
 import {
   CategoricalColorScale,
   FeatureFlag,
@@ -659,10 +658,13 @@ describe('CategoricalColorScale', () => {
   });
 
   describe("is compatible with D3's ScaleOrdinal", () => {
-    test('passes type check', () => {
-      const scale: ScaleOrdinal<{ toString(): string }, string> =
-        new CategoricalColorScale(['blue', 'red', 'green']);
+    test('has a compatible interface', () => {
+      const scale = new CategoricalColorScale(['blue', 'red', 'green']);
       expect(scale('pig')).toBe('blue');
+      expect(scale.domain()).toContain('pig');
+      expect(scale.range()).toEqual(['blue', 'red', 'green']);
+      expect(typeof scale.unknown).toBe('function');
+      expect(typeof scale.copy).toBe('function');
     });
   });
 });
