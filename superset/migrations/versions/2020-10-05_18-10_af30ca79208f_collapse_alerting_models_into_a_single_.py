@@ -26,7 +26,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects.sqlite.base import SQLiteDialect
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
-from sqlalchemy.orm import backref, relationship, RelationshipProperty
+from sqlalchemy.orm import backref, relationship
 
 from superset import db
 from superset.migrations.shared.utils import create_table
@@ -56,11 +56,11 @@ class SQLObserver(Base):
     database_id = sa.Column(sa.Integer)
 
     @declared_attr
-    def alert_id(self) -> int:
+    def alert_id(self):
         return sa.Column(sa.Integer, sa.ForeignKey("alerts.id"), nullable=False)
 
     @declared_attr
-    def alert(self) -> RelationshipProperty:
+    def alert(self):
         return relationship(
             "Alert",
             foreign_keys=[self.alert_id],
@@ -76,11 +76,11 @@ class Validator(Base):
     config = sa.Column(sa.Text)
 
     @declared_attr
-    def alert_id(self) -> int:
+    def alert_id(self):
         return sa.Column(sa.Integer, sa.ForeignKey("alerts.id"), nullable=False)
 
     @declared_attr
-    def alert(self) -> RelationshipProperty:
+    def alert(self):
         return relationship(
             "Alert",
             foreign_keys=[self.alert_id],
