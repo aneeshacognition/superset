@@ -18,6 +18,15 @@
  */
 const packageConfig = require('./package');
 
+// Babel 8 removed NodePath.prototype.hoist(), but @emotion/babel-plugin
+// still calls it for CSS hoisting optimisation.  A no-op polyfill keeps
+// the plugin functional (CSS is evaluated in-place instead of hoisted,
+// a minor perf difference only).
+const { NodePath } = require('@babel/traverse');
+if (typeof NodePath.prototype.hoist !== 'function') {
+  NodePath.prototype.hoist = function () {};
+}
+
 module.exports = {
   sourceMaps: true,
   sourceType: 'module',
@@ -52,12 +61,16 @@ module.exports = {
   ],
   plugins: [
     'lodash',
-    '@babel/plugin-transform-export-namespace-from',
-    '@babel/plugin-transform-class-properties',
-    '@babel/plugin-transform-class-static-block',
-    '@babel/plugin-transform-optional-chaining',
-    '@babel/plugin-transform-private-methods',
-    '@babel/plugin-transform-nullish-coalescing-operator',
+    // In Babel 8, plugins execute before presets.  The transform plugins
+    // below are already shipped inside @babel/preset-env and must run
+    // AFTER @babel/preset-typescript (a preset) strips TS-only syntax
+    // such as `declare` fields and definite-assignment assertions (`!`).
+    // Listing them here as explicit plugins would make them run first,
+    // causing "TypeScript 'declare' fields must first be transformed"
+    // errors.  Removed: plugin-transform-class-properties,
+    // plugin-transform-class-static-block, plugin-transform-optional-chaining,
+    // plugin-transform-private-methods, plugin-transform-nullish-coalescing-operator,
+    // plugin-transform-export-namespace-from.
     '@babel/plugin-transform-runtime',
     ['babel-plugin-polyfill-corejs3', { method: 'usage-pure' }],
     [
@@ -91,7 +104,6 @@ module.exports = {
       plugins: [
         'babel-plugin-dynamic-import-node',
         '@babel/plugin-transform-modules-commonjs',
-        '@babel/plugin-transform-export-namespace-from',
       ],
     },
     // build instrumented code for testing code coverage with Cypress
