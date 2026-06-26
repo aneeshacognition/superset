@@ -335,7 +335,7 @@ class BaseDatasource(
         return self.kind == DatasourceKind.VIRTUAL
 
     @declared_attr
-    def slices(self) -> Mapped[list["Slice"]]:
+    def slices(self) -> RelationshipProperty:
         return relationship(
             "Slice",
             overlaps="table",
@@ -1336,7 +1336,7 @@ class SqlaTable(
     database_id = Column(Integer, ForeignKey("dbs.id"), nullable=False)
     fetch_values_predicate = Column(Text)
     owners = relationship(owner_class, secondary=sqlatable_user, backref="tables")
-    database: Mapped[Database] = relationship(
+    database: Database = relationship(
         "Database",
         backref=backref("tables", cascade="all, delete-orphan"),
         foreign_keys=[database_id],

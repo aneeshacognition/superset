@@ -3301,7 +3301,9 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
                 client_id=shortid()[:10],
                 user_id=get_user_id(),
             )
-            self.session.expunge(query)
+            from sqlalchemy.orm import make_transient
+
+            make_transient(query)
 
         if database and table or query:
             if query:

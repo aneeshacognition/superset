@@ -140,7 +140,9 @@ class QueryEstimationCommand(BaseCommand):
                 client_id=utils.shortid()[:10],
                 user_id=utils.get_user_id(),
             )
-            db.session.expunge(probe_query)
+            from sqlalchemy.orm import make_transient
+
+            make_transient(probe_query)
             # Always resolve through ``get_default_schema_for_query`` — even when
             # the caller pinned a schema — so the engine's per-query security gate
             # runs (e.g. ``PostgresEngineSpec`` rejects a query that sets
