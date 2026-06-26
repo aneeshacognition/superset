@@ -121,7 +121,9 @@ def drop_table_if_exists(table_name: str, table_type: CTASMethod) -> None:
     sql = f"DROP {table_type.name} IF EXISTS {table_name}"
     database = get_example_database()
     with database.get_sqla_engine() as engine:
-        engine.execute(text(sql))
+        with engine.connect() as conn:
+            conn.execute(text(sql))
+            conn.commit()
 
 
 def quote_f(value: Optional[str]):
