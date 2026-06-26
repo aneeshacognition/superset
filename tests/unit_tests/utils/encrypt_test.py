@@ -166,7 +166,7 @@ def test_engine_migration_cbc_to_gcm_re_encrypts() -> None:
 
     assert stats == ReEncryptStats(re_encrypted=1)
     assert conn.execute.call_count == 1
-    new_value = conn.execute.call_args.kwargs["password"]
+    new_value = conn.execute.call_args.args[1]["password"]
     # The stored value changed and now decrypts as GCM back to the plaintext.
     assert new_value != ciphertext
     gcm = _encrypted_type(AesGcmEngine)
@@ -215,7 +215,7 @@ def test_engine_migration_reads_cbc_after_config_already_flipped() -> None:
     )
 
     assert stats == ReEncryptStats(re_encrypted=1)
-    new_value = conn.execute.call_args.kwargs["password"]
+    new_value = conn.execute.call_args.args[1]["password"]
     assert gcm_column.process_result_value(new_value, DIALECT) == "hunter2"
 
 
@@ -240,7 +240,7 @@ def test_engine_migration_gcm_to_cbc_rolls_back() -> None:
     )
 
     assert stats == ReEncryptStats(re_encrypted=1)
-    new_value = conn.execute.call_args.kwargs["password"]
+    new_value = conn.execute.call_args.args[1]["password"]
     assert new_value != gcm_value
     # The rolled-back value now decrypts as AES-CBC back to the plaintext.
     assert _encrypted_type(AesEngine).process_result_value(new_value, DIALECT) == (
@@ -311,7 +311,7 @@ def test_combined_key_rotation_and_engine_migration() -> None:
     )
 
     assert stats == ReEncryptStats(re_encrypted=1)
-    new_value = conn.execute.call_args.kwargs["password"]
+    new_value = conn.execute.call_args.args[1]["password"]
     # The migrated value decrypts as GCM under the *current* key.
     assert _encrypted_type(AesGcmEngine).process_result_value(new_value, DIALECT) == (
         "hunter2"
@@ -355,7 +355,7 @@ def test_key_rotation_for_aes_gcm_column() -> None:
     )
 
     assert stats == ReEncryptStats(re_encrypted=1)
-    new_value = conn.execute.call_args.kwargs["password"]
+    new_value = conn.execute.call_args.args[1]["password"]
     assert gcm_column.process_result_value(new_value, DIALECT) == "hunter2"
 
 
