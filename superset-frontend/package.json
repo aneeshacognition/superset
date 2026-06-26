@@ -422,7 +422,14 @@
     },
     "eslint-plugin-jest-dom": {
       "eslint": "$eslint"
-    }
+    },
+    "babel-plugin-jsx-remove-data-test-id": {
+      "@babel/core": "$@babel/core"
+    },
+    "ts-jest": {
+      "@babel/core": "$@babel/core"
+    },
+    "@babel/plugin-transform-react-constant-elements": "^8.0.1"
   },
   "readme": "ERROR: No README data found!",
   "scarfSettings": {
