@@ -683,7 +683,8 @@ def test_get_columns_error(mocker: MockerFixture):
         "The specified table does not exist."
     )
     Row = namedtuple("Row", ["Column", "Type"])
-    mock_inspector.bind.execute().fetchall.return_value = [
+    mock_conn = mock_inspector.bind.connect.return_value.__enter__.return_value
+    mock_conn.execute.return_value.fetchall.return_value = [
         Row("field1", "row(a varchar, b date)"),
         Row("field2", "row(r1 row(a varchar, b varchar))"),
         Row("field3", "int"),
@@ -723,7 +724,7 @@ def test_get_columns_error(mocker: MockerFixture):
     _assert_columns_equal(actual, expected)
 
     assert_called_with_text(
-        mock_inspector.bind.execute,
+        mock_conn.execute,
         'SHOW COLUMNS FROM schema."table"',
     )
 

@@ -242,7 +242,8 @@ def test_get_catalog_names(mocker: MockerFixture) -> None:
     mock_row_3.keys.return_value = ["Catalog", "Type", "Comment"]
     mock_row_3.__getitem__ = lambda self, key: "iceberg" if key == "Catalog" else None
 
-    inspector.bind.execute.return_value = [mock_row_1, mock_row_2, mock_row_3]
+    mock_conn = inspector.bind.connect.return_value.__enter__.return_value
+    mock_conn.execute.return_value = [mock_row_1, mock_row_2, mock_row_3]
 
     catalogs = StarRocksEngineSpec.get_catalog_names(database, inspector)
     assert catalogs == {"default_catalog", "hive", "iceberg"}

@@ -16,7 +16,7 @@
 # under the License.
 
 from typing import Any, Optional
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 from pytest_mock import MockerFixture
@@ -266,14 +266,15 @@ def test_get_catalog_names(
     from superset.models.core import Database
 
     database = Mock(spec=Database)
-    inspector = Mock()
-    inspector.bind.execute.return_value = mock_catalogs
+    inspector = MagicMock()
+    mock_conn = inspector.bind.connect.return_value.__enter__.return_value
+    mock_conn.execute.return_value = mock_catalogs
 
     catalogs = DorisEngineSpec.get_catalog_names(database, inspector)
 
     # Verify the SQL query
     assert_called_once_with_text(
-        inspector.bind.execute,
+        mock_conn.execute,
         "SHOW CATALOGS",
     )
 
