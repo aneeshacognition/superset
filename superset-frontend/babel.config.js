@@ -18,19 +18,52 @@
  */
 const packageConfig = require('./package');
 
+// Babel 8 removed NodePath.prototype.hoist(), but @emotion/babel-plugin
+// still calls it for CSS hoisting optimisation.  A no-op polyfill keeps
+// the plugin functional (CSS is evaluated in-place instead of hoisted,
+// a minor perf difference only).
+const { NodePath } = require('@babel/traverse');
+if (typeof NodePath.prototype.hoist !== 'function') {
+  NodePath.prototype.hoist = function () {};
+}
+
+// Babel 8 renamed JSX builder helpers from jSX* to jsx* (lowercase).
+// babel-plugin-jsx-remove-data-test-id still calls t.jSXOpeningElement.
+// Because @babel/types is ESM in Babel 8, require() returns a fresh CJS
+// wrapper each time, so we cannot patch the module directly.  Instead we
+// wrap the plugin and proxy the types object it receives.
+const _origRemoveTestId = require('babel-plugin-jsx-remove-data-test-id');
+const _removeTestIdFn = _origRemoveTestId.default || _origRemoveTestId;
+function removeDataTestIdCompat(api, options) {
+  const proxiedTypes = new Proxy(api.types, {
+    get(target, prop, receiver) {
+      if (prop === 'jSXOpeningElement') return target.jsxOpeningElement;
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+  return _removeTestIdFn({ ...api, types: proxiedTypes }, options);
+}
+
 module.exports = {
   sourceMaps: true,
   sourceType: 'module',
   retainLines: true,
+  assumptions: {
+    constantSuper: true,
+    noDocumentAll: true,
+    objectRestNoSymbols: true,
+    privateFieldsAsProperties: true,
+    pureGetters: true,
+    setComputedProperties: true,
+    setPublicClassFields: true,
+    setSpreadProperties: true,
+    superIsCallableConstructor: true,
+  },
   presets: [
     [
       '@babel/preset-env',
       {
-        useBuiltIns: 'usage',
-        corejs: 3,
-        loose: true,
         modules: false,
-        shippedProposals: true,
         targets: packageConfig.browserslist,
       },
     ],
@@ -45,14 +78,18 @@ module.exports = {
   ],
   plugins: [
     'lodash',
-    '@babel/plugin-syntax-dynamic-import',
-    '@babel/plugin-transform-export-namespace-from',
-    ['@babel/plugin-transform-class-properties', { loose: true }],
-    '@babel/plugin-transform-class-static-block',
-    ['@babel/plugin-transform-optional-chaining', { loose: true }],
-    ['@babel/plugin-transform-private-methods', { loose: true }],
-    ['@babel/plugin-transform-nullish-coalescing-operator', { loose: true }],
-    ['@babel/plugin-transform-runtime', { corejs: 3 }],
+    // In Babel 8, plugins execute before presets.  The transform plugins
+    // below are already shipped inside @babel/preset-env and must run
+    // AFTER @babel/preset-typescript (a preset) strips TS-only syntax
+    // such as `declare` fields and definite-assignment assertions (`!`).
+    // Listing them here as explicit plugins would make them run first,
+    // causing "TypeScript 'declare' fields must first be transformed"
+    // errors.  Removed: plugin-transform-class-properties,
+    // plugin-transform-class-static-block, plugin-transform-optional-chaining,
+    // plugin-transform-private-methods, plugin-transform-nullish-coalescing-operator,
+    // plugin-transform-export-namespace-from.
+    '@babel/plugin-transform-runtime',
+    ['babel-plugin-polyfill-corejs3', { method: 'usage-pure' }],
     [
       '@emotion/babel-plugin',
       {
@@ -68,10 +105,6 @@ module.exports = {
         [
           '@babel/preset-env',
           {
-            useBuiltIns: 'usage',
-            corejs: 3,
-            loose: true,
-            shippedProposals: true,
             modules: 'auto',
             targets: { node: 'current' },
           },
@@ -88,7 +121,6 @@ module.exports = {
       plugins: [
         'babel-plugin-dynamic-import-node',
         '@babel/plugin-transform-modules-commonjs',
-        '@babel/plugin-transform-export-namespace-from',
       ],
     },
     // build instrumented code for testing code coverage with Cypress
@@ -105,7 +137,7 @@ module.exports = {
     production: {
       plugins: [
         [
-          'babel-plugin-jsx-remove-data-test-id',
+          removeDataTestIdCompat,
           {
             // The plugin matches attribute names exactly (no prefix match),
             // so each data-test* attribute must be listed explicitly.
