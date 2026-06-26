@@ -22,15 +22,27 @@ module.exports = {
   sourceMaps: true,
   sourceType: 'module',
   retainLines: true,
+  assumptions: {
+    setPublicClassFields: true,
+    privateFieldsAsProperties: true,
+    constantSuper: true,
+    noDocumentAll: true,
+    noNewArrows: true,
+    objectRestNoSymbols: true,
+    iterableIsArray: true,
+    skipForOfIteratorClosing: true,
+    superIsCallableConstructor: true,
+    noClassCalls: true,
+    ignoreToPrimitiveHint: true,
+    ignoreFunctionLength: true,
+    enumerableModuleMeta: true,
+    pureGetters: true,
+  },
   presets: [
     [
       '@babel/preset-env',
       {
-        useBuiltIns: 'usage',
-        corejs: 3,
-        loose: true,
         modules: false,
-        shippedProposals: true,
         targets: packageConfig.browserslist,
       },
     ],
@@ -45,14 +57,12 @@ module.exports = {
   ],
   plugins: [
     'lodash',
-    '@babel/plugin-syntax-dynamic-import',
     '@babel/plugin-transform-export-namespace-from',
-    ['@babel/plugin-transform-class-properties', { loose: true }],
-    '@babel/plugin-transform-class-static-block',
-    ['@babel/plugin-transform-optional-chaining', { loose: true }],
-    ['@babel/plugin-transform-private-methods', { loose: true }],
-    ['@babel/plugin-transform-nullish-coalescing-operator', { loose: true }],
-    ['@babel/plugin-transform-runtime', { corejs: 3 }],
+    '@babel/plugin-transform-runtime',
+    [
+      'babel-plugin-polyfill-corejs3',
+      { method: 'usage-global', version: '3.48' },
+    ],
     [
       '@emotion/babel-plugin',
       {
@@ -68,10 +78,6 @@ module.exports = {
         [
           '@babel/preset-env',
           {
-            useBuiltIns: 'usage',
-            corejs: 3,
-            loose: true,
-            shippedProposals: true,
             modules: 'auto',
             targets: { node: 'current' },
           },
@@ -86,7 +92,6 @@ module.exports = {
         '@babel/preset-typescript',
       ],
       plugins: [
-        'babel-plugin-dynamic-import-node',
         '@babel/plugin-transform-modules-commonjs',
         '@babel/plugin-transform-export-namespace-from',
       ],
