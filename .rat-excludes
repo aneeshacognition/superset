@@ -16,6 +16,7 @@
 .*log
 .*pyc
 .*lock
+.*patch
 .*geojson
 DISCLAIMER
 licenses/*

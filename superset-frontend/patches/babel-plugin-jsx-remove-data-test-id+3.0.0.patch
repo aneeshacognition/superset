@@ -1,0 +1,13 @@
+diff --git a/node_modules/babel-plugin-jsx-remove-data-test-id/lib/index.js b/node_modules/babel-plugin-jsx-remove-data-test-id/lib/index.js
+index dbe1647..00a2da1 100644
+--- a/node_modules/babel-plugin-jsx-remove-data-test-id/lib/index.js
++++ b/node_modules/babel-plugin-jsx-remove-data-test-id/lib/index.js
+@@ -70,7 +70,7 @@ const RemoveDataTestIds = ({
+         const isDefined = value => typeof value !== 'undefined';
+
+         const attrs = path.node.attributes.map(matchingAttrs).filter(isDefined);
+-        const node = t.jSXOpeningElement(path.node.name, attrs, path.node.selfClosing);
++        const node = t.jsxOpeningElement(path.node.name, attrs, path.node.selfClosing);
+         node.hasStripped = true;
+         path.replaceWith(node);
+       };

@@ -49,10 +49,7 @@ module.exports = {
   plugins: [
     'lodash',
     '@babel/plugin-transform-export-namespace-from',
-    '@babel/plugin-transform-class-properties',
-    '@babel/plugin-transform-class-static-block',
     '@babel/plugin-transform-optional-chaining',
-    '@babel/plugin-transform-private-methods',
     '@babel/plugin-transform-nullish-coalescing-operator',
     '@babel/plugin-transform-runtime',
     ['babel-plugin-polyfill-corejs3', { method: 'usage-global' }],
