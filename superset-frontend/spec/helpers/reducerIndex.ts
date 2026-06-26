@@ -39,7 +39,7 @@ const common = { ...bootstrapData.common };
 const user = { ...bootstrapData.user };
 
 const noopReducer =
-  <STATE = unknown>(initialState: STATE) =>
+  <STATE extends unknown>(initialState: STATE) =>
   (state: STATE = initialState) =>
     state;
 

@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { NumberFormatter } from '../number-format';
-import { CurrencyFormatter } from '../currency-format';
+import type { NumberFormatter } from '../number-format';
+import type { CurrencyFormatter } from '../currency-format';
 
 export * from '../query/types';
 export * from './AgGrid';

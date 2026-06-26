@@ -17,8 +17,8 @@
  * under the License.
  */
 import { nanoid } from 'nanoid';
-import { Column } from './Column';
-import { Metric } from './Metric';
+import type { Column } from './Column';
+import type { Metric } from './Metric';
 
 export enum DatasourceType {
   Table = 'table',

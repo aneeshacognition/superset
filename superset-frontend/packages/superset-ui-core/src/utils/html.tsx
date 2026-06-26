@@ -17,7 +17,7 @@
  * under the License.
  */
 import { FilterXSS, getDefaultWhiteList } from 'xss';
-import { DataRecordValue } from '../types';
+import type { DataRecordValue } from '../types';
 
 // Restrict inline `style` attributes to a small set of presentational CSS
 // properties. Overlay/positioning properties (e.g. position, z-index, top,

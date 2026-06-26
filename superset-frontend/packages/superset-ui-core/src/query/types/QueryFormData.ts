@@ -21,19 +21,19 @@
 /**
  * Types for the final QueryContext sent to /api/v1/chart/data.
  */
-import { AdhocMetric, SavedMetric } from './Metric';
-import { AdhocFilter } from './Filter';
-import { BinaryOperator, SetOperator } from './Operator';
-import { AnnotationLayer } from './AnnotationLayer';
-import {
+import type { AdhocMetric, SavedMetric } from './Metric';
+import type { AdhocFilter } from './Filter';
+import type { BinaryOperator, SetOperator } from './Operator';
+import type { AnnotationLayer } from './AnnotationLayer';
+import type {
   QueryObject,
   QueryObjectExtras,
   QueryObjectFilterClause,
 } from './Query';
-import { TimeRange } from './Time';
-import { TimeGranularity } from '../../time-format';
-import { JsonObject } from '../../connection';
-import { AdhocColumn, PhysicalColumn } from './Column';
+import type { TimeRange } from './Time';
+import type { TimeGranularity } from '../../time-format';
+import type { JsonObject } from '../../connection';
+import type { AdhocColumn, PhysicalColumn } from './Column';
 
 /**
  * Metric definition/reference in query object.

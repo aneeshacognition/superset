@@ -17,7 +17,7 @@
  * under the License.
  */
 import { GenericDataType } from '@apache-superset/core/common';
-import { TimeseriesDataRecord } from '../../chart';
+import type { TimeseriesDataRecord } from '../../chart';
 import { AnnotationData } from './AnnotationLayer';
 
 /**

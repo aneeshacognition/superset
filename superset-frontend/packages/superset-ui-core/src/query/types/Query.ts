@@ -19,20 +19,20 @@
  */
 import { GenericDataType } from '@apache-superset/core/common';
 import { DatasourceType } from './Datasource';
-import { BinaryOperator, SetOperator, UnaryOperator } from './Operator';
-import { AppliedTimeExtras, TimeRange } from './Time';
-import { AnnotationLayer } from './AnnotationLayer';
-import {
+import type { BinaryOperator, SetOperator, UnaryOperator } from './Operator';
+import type { AppliedTimeExtras, TimeRange } from './Time';
+import type { AnnotationLayer } from './AnnotationLayer';
+import type {
   QueryFields,
   QueryFormColumn,
   QueryFormData,
   QueryFormMetric,
 } from './QueryFormData';
-import { Maybe } from '../../types';
-import { PostProcessingRule } from './PostProcessing';
-import { JsonObject } from '../../connection';
-import { TimeGranularity } from '../../time-format';
-import { DataRecordValue } from './QueryResponse';
+import type { Maybe } from '../../types';
+import type { PostProcessingRule } from './PostProcessing';
+import type { JsonObject } from '../../connection';
+import type { TimeGranularity } from '../../time-format';
+import type { DataRecordValue } from './QueryResponse';
 
 export type BaseQueryObjectFilterClause = {
   col: QueryFormColumn;

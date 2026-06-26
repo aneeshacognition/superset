@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { AdhocMetric } from '../../query';
+import type { AdhocMetric } from '../../query';
 
 /**
  * Constants for Matrixify filter generation

@@ -18,8 +18,8 @@
  */
 
 /* eslint camelcase: 0 */
-import { DataRecord } from './QueryResponse';
-import { TimeGranularity } from '../../time-format';
+import type { DataRecord } from './QueryResponse';
+import type { TimeGranularity } from '../../time-format';
 
 export enum AnnotationType {
   Event = 'EVENT',
