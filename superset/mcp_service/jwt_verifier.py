@@ -36,9 +36,15 @@ from contextvars import ContextVar
 from typing import Any, cast
 
 import httpx
-from authlib.jose.errors import JoseError
 from fastmcp.server.auth.auth import AccessToken
 from fastmcp.server.auth.providers.jwt import JWTVerifier
+from joserfc import jwk as _joserfc_jwk, jwt as _joserfc_jwt
+from joserfc.errors import (
+    BadSignatureError,
+    ExpiredTokenError,
+    JoseError,
+)
+from joserfc.jws import JWSRegistry as _JWSRegistry
 from mcp.server.auth.middleware.auth_context import AuthContextMiddleware
 from mcp.server.auth.middleware.bearer_auth import BearerAuthBackend
 from starlette.authentication import AuthenticationError
@@ -473,6 +479,37 @@ class DetailedJWTVerifier(MCPJWTVerifier):
     Controlled by MCP_JWT_DEBUG_ERRORS config flag.
     """
 
+    def _decode_jwt(self, token: str, verification_key: str | bytes) -> dict[str, Any]:
+        """Decode and verify a JWT, returning claims as a plain dict.
+
+        Uses ``joserfc`` (the library fastmcp >= 3.4 depends on) instead
+        of the removed ``authlib``-backed ``self.jwt`` attribute.
+        """
+        # self.algorithm is guaranteed non-None by the caller (the
+        # "No signing algorithm pinned" check rejects before reaching decode).
+        assert self.algorithm is not None
+        alg: str = self.algorithm
+        if alg.startswith("HS"):
+            key_type = "oct"
+        elif alg.startswith(("RS", "PS")):
+            key_type = "RSA"
+        elif alg.startswith("ES"):
+            key_type = "EC"
+        else:
+            raise ValueError(f"Unsupported algorithm: {alg}")
+
+        key = _joserfc_jwk.import_key(verification_key, key_type)
+        token_obj = _joserfc_jwt.decode(
+            token,
+            key,
+            algorithms=[alg],
+            registry=_JWSRegistry(
+                algorithms=[alg],
+                strict_check_header=False,
+            ),
+        )
+        return dict(token_obj.claims)
+
     async def load_access_token(self, token: str) -> AccessToken | None:  # noqa: C901
         """
         Validate a JWT bearer token with detailed error reporting.
@@ -571,17 +608,19 @@ class DetailedJWTVerifier(MCPJWTVerifier):
 
             # Step 3: Decode and verify signature
             try:
-                claims = self.jwt.decode(token, verification_key)
-            except JoseError as e:
-                error_code = getattr(e, "error", None)
-                if error_code == "bad_signature":
-                    reason = "Signature verification failed"
-                elif error_code == "expired_token":
-                    reason = "Token has expired (detected during decode)"
-                else:
-                    reason = "Token decode failed"
-                    logger.debug("Token decode failed: %s", e)
+                claims = self._decode_jwt(token, verification_key)
+            except BadSignatureError:
+                reason = "Signature verification failed"
                 _jwt_failure_reason.set(reason)
+                return None
+            except ExpiredTokenError:
+                reason = "Token has expired (detected during decode)"
+                _jwt_failure_reason.set(reason)
+                return None
+            except JoseError as e:
+                reason = "Token decode failed"
+                _jwt_failure_reason.set(reason)
+                logger.debug("Token decode failed: %s", e)
                 return None
 
             # Extract client ID for logging
