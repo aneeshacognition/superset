@@ -335,7 +335,7 @@ class BaseDatasource(
         return self.kind == DatasourceKind.VIRTUAL
 
     @declared_attr
-    def slices(self) -> RelationshipProperty:
+    def slices(self):  # type: ignore[no-untyped-def]
         return relationship(
             "Slice",
             overlaps="table",
@@ -1445,8 +1445,9 @@ class SqlaTable(
     def link(self) -> Markup:
         name = escape(self.name)
         url = escape(self.explore_url)
-        anchor = f'<a target="_blank" href="{url}">{name}</a>'
-        return Markup(anchor)
+        return Markup('<a target="_blank" href="{url}">{name}</a>').format(
+            url=url, name=name
+        )
 
     def get_catalog_perm(self) -> str | None:
         """Returns catalog permission if present, database one otherwise."""

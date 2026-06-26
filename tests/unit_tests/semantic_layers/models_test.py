@@ -442,7 +442,7 @@ def test_semantic_view_get_perm_without_layer() -> None:
     view = SemanticView()
     view.id = 1
     view.name = "Orphan View"
-    view.semantic_layer = None  # type: ignore
+    view.semantic_layer = None
     assert view.get_perm() == "[unknown].[Orphan View](id:1)"
 
 
@@ -1026,7 +1026,7 @@ def test_semantic_view_get_perm_explicit_layer_name() -> None:
     view = SemanticView()
     view.id = 5
     view.name = "My View"
-    view.semantic_layer = None  # type: ignore
+    view.semantic_layer = None
     assert (
         view.get_perm(layer_name="Explicit Layer") == "[Explicit Layer].[My View](id:5)"
     )

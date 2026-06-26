@@ -56,7 +56,7 @@ def upgrade():
 
 def downgrade():
     bind = op.get_bind()
-    insp = sa.engine.reflection.Inspector.from_engine(bind)
+    insp = sa.inspect(bind)
 
     # Restore the size of the metric_name column.
     with op.batch_alter_table("metrics", naming_convention=conv) as batch_op:

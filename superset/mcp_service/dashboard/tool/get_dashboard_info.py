@@ -151,15 +151,20 @@ async def get_dashboard_info(
     )
 
     try:
+        from sqlalchemy.exc import ArgumentError
+
         from superset.daos.dashboard import DashboardDAO
         from superset.models.dashboard import Dashboard
         from superset.models.slice import Slice
 
         # Eager load slices and tags to avoid N+1 queries during serialization.
-        eager_options = [
-            subqueryload(Dashboard.slices).subqueryload(Slice.tags),
-            subqueryload(Dashboard.tags),
-        ]
+        try:
+            eager_options: list[Any] = [
+                subqueryload(Dashboard.slices).subqueryload(Slice.tags),
+                subqueryload(Dashboard.tags),
+            ]
+        except ArgumentError:
+            eager_options = []
 
         with event_logger.log_context(action="mcp.get_dashboard_info.lookup"):
             tool = ModelGetInfoCore(

@@ -173,6 +173,7 @@ class TestDatabaseModel(SupersetTestCase):
             "'{{ 'xyz_' + time_grain }}' as time_grain",
             database=get_example_database(),
         )
+        db.session.add(table)
         TableColumn(
             column_name="expr",
             expression="case when '{{ current_username() }}' = 'abc' "
@@ -212,6 +213,7 @@ class TestDatabaseModel(SupersetTestCase):
         metric = SqlMetric(
             metric_name="count_jinja_metric", expression="count(*)", table=table
         )
+        db.session.add(metric)
         db.session.commit()
 
         base_query_obj = {
@@ -275,6 +277,7 @@ class TestDatabaseModel(SupersetTestCase):
         table = SqlaTable(
             table_name="test_validate_adhoc_sql", database=get_example_database()
         )
+        db.session.add(table)
         db.session.commit()
 
         with pytest.raises(QueryObjectValidationError):

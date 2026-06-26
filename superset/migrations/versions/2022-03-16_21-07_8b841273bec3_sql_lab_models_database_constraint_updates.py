@@ -34,7 +34,7 @@ from superset.utils.core import generic_find_fk_constraint_name  # noqa: E402
 
 def upgrade():
     bind = op.get_bind()
-    insp = sa.engine.reflection.Inspector.from_engine(bind)
+    insp = sa.inspect(bind)
 
     with op.batch_alter_table("tab_state") as batch_op:
         table_schema_id_constraint = generic_find_fk_constraint_name(
@@ -92,7 +92,7 @@ def upgrade():
 
 def downgrade():
     bind = op.get_bind()
-    insp = sa.engine.reflection.Inspector.from_engine(bind)
+    insp = sa.inspect(bind)
 
     with op.batch_alter_table("tab_state") as batch_op:
         table_schema_id_constraint = generic_find_fk_constraint_name(

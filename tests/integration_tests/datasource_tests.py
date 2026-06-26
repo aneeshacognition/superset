@@ -63,27 +63,31 @@ def create_test_table_context(database: Database):
     full_table_name = f"{schema}.test_table" if schema else "test_table"
 
     with database.get_sqla_engine() as engine:
-        engine.execute(
-            text(f"""
-            CREATE TABLE IF NOT EXISTS {full_table_name} AS
-            SELECT 1 as first, 2 as second
-            """)
-        )
-        engine.execute(
-            text(f"""
-            INSERT INTO {full_table_name} (first, second) VALUES (1, 2)
-            """)  # noqa: S608
-        )
-        engine.execute(
-            text(f"""
-            INSERT INTO {full_table_name} (first, second) VALUES (3, 4)
-            """)  # noqa: S608
-        )
+        with engine.connect() as conn:
+            conn.execute(
+                text(f"""
+                CREATE TABLE IF NOT EXISTS {full_table_name} AS
+                SELECT 1 as first, 2 as second
+                """)
+            )
+            conn.execute(
+                text(f"""
+                INSERT INTO {full_table_name} (first, second) VALUES (1, 2)
+                """)  # noqa: S608
+            )
+            conn.execute(
+                text(f"""
+                INSERT INTO {full_table_name} (first, second) VALUES (3, 4)
+                """)  # noqa: S608
+            )
+            conn.commit()
 
     yield db.session
 
     with database.get_sqla_engine() as engine:
-        engine.execute(text(f"DROP TABLE {full_table_name}"))
+        with engine.connect() as conn:
+            conn.execute(text(f"DROP TABLE {full_table_name}"))
+            conn.commit()
 
 
 @contextmanager
@@ -106,7 +110,7 @@ def create_and_cleanup_table(table=None):
 
 class TestDatasource(SupersetTestCase):
     def setUp(self):
-        db.session.begin(subtransactions=True)
+        db.session.begin_nested()
 
     def tearDown(self):
         db.session.rollback()
@@ -229,8 +233,8 @@ class TestDatasource(SupersetTestCase):
     def test_external_metadata_by_name_for_virtual_table_uses_mutator(self):
         self.login(ADMIN_USERNAME)
         with create_and_cleanup_table() as tbl:
-            current_app.config["SQL_QUERY_MUTATOR"] = (
-                lambda sql, **kwargs: "SELECT 456 as intcol, 'def' as mutated_strcol"
+            current_app.config["SQL_QUERY_MUTATOR"] = lambda sql, **kwargs: (
+                "SELECT 456 as intcol, 'def' as mutated_strcol"
             )
 
             params = rison.dumps(
@@ -365,10 +369,12 @@ class TestDatasource(SupersetTestCase):
 
         pytest.raises(
             SupersetGenericDBErrorException,
-            lambda: db.session.query(SqlaTable)
-            .filter_by(id=tbl.id)
-            .one_or_none()
-            .external_metadata(),
+            lambda: (
+                db.session.query(SqlaTable)
+                .filter_by(id=tbl.id)
+                .one_or_none()
+                .external_metadata()
+            ),
         )
 
         resp = self.client.get(url)

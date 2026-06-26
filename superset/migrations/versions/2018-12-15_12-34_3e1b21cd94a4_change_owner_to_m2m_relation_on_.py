@@ -86,7 +86,7 @@ def upgrade():
     )
 
     bind = op.get_bind()
-    insp = sa.engine.reflection.Inspector.from_engine(bind)
+    insp = sa.inspect(bind)
     session = db.Session(bind=bind)
 
     tables = session.query(SqlaTable).all()

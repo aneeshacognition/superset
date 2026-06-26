@@ -32,7 +32,6 @@ from uuid import uuid4  # noqa: E402
 
 import sqlalchemy as sa  # noqa: E402
 from alembic import op  # noqa: E402
-from sqlalchemy.engine.reflection import Inspector  # noqa: E402
 from sqlalchemy.orm import load_only  # noqa: E402
 from sqlalchemy_utils import UUIDType  # noqa: E402
 
@@ -50,7 +49,7 @@ update_dashboards = add_uuid_column_to_import_mixin.update_dashboards
 
 
 def has_uuid_column(table_name, bind):
-    inspector = Inspector.from_engine(bind)
+    inspector = sa.inspect(bind)
     columns = {column["name"] for column in inspector.get_columns(table_name)}
     has_uuid_column = "uuid" in columns
     if has_uuid_column:
@@ -90,7 +89,7 @@ def upgrade():
     slice_uuid_map = {
         slc.id: slc.uuid
         for slc in session.query(models["slices"])
-        .options(load_only("id", "uuid"))
+        .options(load_only(models["slices"].id, models["slices"].uuid))
         .all()
     }
     update_dashboards(session, slice_uuid_map)

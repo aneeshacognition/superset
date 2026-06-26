@@ -24,7 +24,7 @@ Create Date: 2020-11-04 11:06:59.249758
 
 import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy import inspect
 
 from superset.migrations.shared.utils import create_table
 
@@ -129,7 +129,7 @@ def upgrade():
 
 def has_unique_constraint(constraint_name: str, table_name: str) -> bool:
     bind = op.get_bind()
-    inspector = Inspector.from_engine(bind)
+    inspector = inspect(bind)
     unique_constraints = inspector.get_unique_constraints(table_name)
     return constraint_name in {constraint["name"] for constraint in unique_constraints}
 

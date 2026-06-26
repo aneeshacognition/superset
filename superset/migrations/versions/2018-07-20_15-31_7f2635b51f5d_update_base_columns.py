@@ -30,7 +30,7 @@ revision = "7f2635b51f5d"
 down_revision = "937d04c16b64"
 
 from alembic import op  # noqa: E402
-from sqlalchemy import Column, engine, Integer, String  # noqa: E402
+from sqlalchemy import Column, inspect, Integer, String  # noqa: E402
 from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
 
 from superset import db  # noqa: E402
@@ -95,7 +95,7 @@ def upgrade():
 
 def downgrade():
     bind = op.get_bind()
-    insp = engine.reflection.Inspector.from_engine(bind)
+    insp = inspect(bind)
 
     # Remove the missing uniqueness constraint from the table_columns table.
     with op.batch_alter_table("table_columns", naming_convention=conv) as batch_op:

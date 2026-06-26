@@ -265,12 +265,13 @@ class SnowflakeEngineSpec(PostgresBaseEngineSpec):
 
         In Snowflake, a catalog is called a "database".
         """
-        return {
-            catalog
-            for (catalog,) in inspector.bind.execute(
-                text("SELECT DATABASE_NAME from information_schema.databases")
-            )
-        }
+        with inspector.bind.connect() as conn:
+            return {
+                catalog
+                for (catalog,) in conn.execute(
+                    text("SELECT DATABASE_NAME from information_schema.databases")
+                )
+            }
 
     @classmethod
     def epoch_to_dttm(cls) -> str:
@@ -354,19 +355,17 @@ class SnowflakeEngineSpec(PostgresBaseEngineSpec):
             dict[str, Any]
         ] = None,
     ) -> str:
-        return str(
-            URL.create(
-                "snowflake",
-                username=parameters.get("username"),
-                password=parameters.get("password"),
-                host=parameters.get("account"),
-                database=parameters.get("database"),
-                query={
-                    "role": parameters.get("role"),
-                    "warehouse": parameters.get("warehouse"),
-                },
-            )
-        )
+        return URL.create(
+            "snowflake",
+            username=parameters.get("username"),
+            password=parameters.get("password"),
+            host=parameters.get("account"),
+            database=parameters.get("database"),
+            query={
+                "role": parameters.get("role"),
+                "warehouse": parameters.get("warehouse"),
+            },
+        ).render_as_string(hide_password=False)
 
     @classmethod
     def get_parameters_from_uri(

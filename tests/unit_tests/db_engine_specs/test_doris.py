@@ -16,7 +16,7 @@
 # under the License.
 
 from typing import Any, Optional
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 from pytest_mock import MockerFixture
@@ -230,7 +230,11 @@ def test_get_default_catalog(
         mocker.MagicMock(IsCurrent=True, CatalogName="catalog2"),
     ]
     with database.get_sqla_engine() as engine:
-        engine.execute.return_value = rows
+        engine.connect.return_value.__enter__ = mocker.MagicMock(
+            return_value=mocker.MagicMock()
+        )
+        engine.connect.return_value.__exit__ = mocker.MagicMock(return_value=False)
+        engine.connect.return_value.__enter__.return_value.execute.return_value = rows
 
     assert DorisEngineSpec.get_default_catalog(database) == expected_catalog
 
@@ -266,14 +270,15 @@ def test_get_catalog_names(
     from superset.models.core import Database
 
     database = Mock(spec=Database)
-    inspector = Mock()
-    inspector.bind.execute.return_value = mock_catalogs
+    inspector = MagicMock()
+    mock_conn = inspector.bind.connect.return_value.__enter__.return_value
+    mock_conn.execute.return_value = mock_catalogs
 
     catalogs = DorisEngineSpec.get_catalog_names(database, inspector)
 
     # Verify the SQL query
     assert_called_once_with_text(
-        inspector.bind.execute,
+        mock_conn.execute,
         "SHOW CATALOGS",
     )
 

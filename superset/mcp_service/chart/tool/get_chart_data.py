@@ -356,12 +356,17 @@ async def get_chart_data(  # noqa: C901
         # (which may run after the request-scoped session is detached) can
         # access dataset.metrics without triggering a lazy load. See
         # apache/superset#39206 for the analogous database eager-load fix.
+        from sqlalchemy.exc import ArgumentError
+
         from superset.connectors.sqla.models import SqlaTable
         from superset.models.slice import Slice
 
-        chart_query_options = [
-            subqueryload(Slice.table).subqueryload(SqlaTable.metrics),
-        ]
+        try:
+            chart_query_options: list[Any] = [
+                subqueryload(Slice.table).subqueryload(SqlaTable.metrics),
+            ]
+        except ArgumentError:
+            chart_query_options = []
 
         with event_logger.log_context(action="mcp.get_chart_data.chart_lookup"):
             await ctx.debug("Looking up chart: identifier=%s" % (request.identifier,))

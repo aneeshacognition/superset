@@ -547,6 +547,7 @@ def add_chart_to_existing_dashboard(  # noqa: C901 — complexity is structural 
         # return a minimal response using only scalar attributes that are
         # already loaded — relationship fields (tags, slices) would
         # trigger lazy-loading on the same dead session.
+        from sqlalchemy.exc import ArgumentError
         from sqlalchemy.orm import subqueryload
 
         from superset.daos.dashboard import DashboardDAO
@@ -554,13 +555,18 @@ def add_chart_to_existing_dashboard(  # noqa: C901 — complexity is structural 
         from superset.models.slice import Slice
 
         try:
+            query_options: list[Any] = [
+                subqueryload(Dashboard.slices).subqueryload(Slice.tags),
+                subqueryload(Dashboard.tags),
+            ]
+        except ArgumentError:
+            query_options = []
+
+        try:
             updated_dashboard = (
                 DashboardDAO.find_by_id(
                     updated_dashboard.id,
-                    query_options=[
-                        subqueryload(Dashboard.slices).subqueryload(Slice.tags),
-                        subqueryload(Dashboard.tags),
-                    ],
+                    query_options=query_options,
                 )
                 or updated_dashboard
             )

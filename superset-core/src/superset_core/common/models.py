@@ -56,6 +56,7 @@ class CoreModel(Model):
     """
 
     __abstract__ = True
+    __allow_unmapped__ = True
 
 
 class Database(CoreModel):
