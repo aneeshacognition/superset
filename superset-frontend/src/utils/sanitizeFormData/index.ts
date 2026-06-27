@@ -17,7 +17,7 @@
  * under the License.
  */
 import { JsonObject } from '@superset-ui/core';
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 
 const TEMPORARY_CONTROLS: string[] = ['url_params'];
 

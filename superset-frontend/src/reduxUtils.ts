@@ -19,7 +19,10 @@
 import { nanoid } from 'nanoid';
 import { compose } from 'redux';
 import persistState, { StorageAdapter } from 'redux-localstorage';
-import { isEqual, omitBy, omit, isEqualWith } from 'lodash';
+import isEqual from 'lodash/isEqual';
+import omitBy from 'lodash/omitBy';
+import omit from 'lodash/omit';
+import isEqualWith from 'lodash/isEqualWith';
 import { ensureIsArray } from '@superset-ui/core';
 
 export function addToObject(

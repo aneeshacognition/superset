@@ -29,8 +29,8 @@ import {
   getClientErrorObject,
 } from '@superset-ui/core';
 import { t } from '@apache-superset/core/translation';
-import { invert, mapKeys } from 'lodash';
-
+import invert from 'lodash/invert';
+import mapKeys from 'lodash/mapKeys';
 import { now } from '@superset-ui/core/utils/dates';
 import {
   addDangerToast as addDangerToastAction,

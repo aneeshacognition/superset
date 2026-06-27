@@ -18,7 +18,7 @@
  */
 
 /* eslint-disable no-param-reassign */
-import { throttle } from 'lodash';
+import throttle from 'lodash/throttle';
 import {
   memo,
   useEffect,

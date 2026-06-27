@@ -17,7 +17,8 @@
  * under the License.
  */
 import { ReactNode, useCallback, useEffect, useState } from 'react';
-import { isEmpty, isEqual } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
 import { extendedDayjs } from '@superset-ui/core/utils/dates';
 import {
   parseDttmToDate,

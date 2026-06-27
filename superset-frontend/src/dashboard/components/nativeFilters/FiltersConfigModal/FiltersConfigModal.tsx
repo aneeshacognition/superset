@@ -17,7 +17,8 @@
  * under the License.
  */
 import { memo, useEffect, useCallback, useMemo, useState, useRef } from 'react';
-import { uniq, debounce } from 'lodash';
+import uniq from 'lodash/uniq';
+import debounce from 'lodash/debounce';
 import { t } from '@apache-superset/core/translation';
 import { ChartCustomizationType, NativeFilterType } from '@superset-ui/core';
 import { styled, css, useTheme } from '@apache-superset/core/theme';

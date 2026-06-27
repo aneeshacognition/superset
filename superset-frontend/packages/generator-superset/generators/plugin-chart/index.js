@@ -18,8 +18,10 @@
  */
 
 import Generator from 'yeoman-generator';
-import { kebabCase, camelCase, startCase, upperFirst } from 'lodash-es';
-
+import kebabCase from 'lodash-es/kebabCase';
+import camelCase from 'lodash-es/camelCase';
+import startCase from 'lodash-es/startCase';
+import upperFirst from 'lodash-es/upperFirst';
 export default class extends Generator {
   async prompting() {
     this.option('skipInstall');

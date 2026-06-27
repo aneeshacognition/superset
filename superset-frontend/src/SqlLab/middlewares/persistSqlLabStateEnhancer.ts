@@ -18,7 +18,7 @@
  */
 import type { StoreEnhancer } from 'redux';
 import persistState from 'redux-localstorage';
-import { pickBy } from 'lodash';
+import pickBy from 'lodash/pickBy';
 import { isFeatureEnabled, FeatureFlag } from '@superset-ui/core';
 import { filterUnsavedQueryEditorList } from 'src/SqlLab/components/EditorAutoSync';
 import type {

@@ -29,7 +29,7 @@ import {
   waitFor,
   within,
 } from '@superset-ui/core/spec';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import {
   QueryMode,
   TimeGranularity,

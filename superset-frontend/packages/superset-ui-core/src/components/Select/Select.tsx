@@ -37,7 +37,9 @@ import {
   LabeledValue as AntdLabeledValue,
   RefSelectProps,
 } from 'antd/es/select';
-import { debounce, isEqual, uniq } from 'lodash';
+import debounce from 'lodash/debounce';
+import isEqual from 'lodash/isEqual';
+import uniq from 'lodash/uniq';
 import {
   dropDownRenderHelper,
   getOption,

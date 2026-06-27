@@ -25,7 +25,8 @@ import {
   CacheProvider as EmotionCacheProvider,
 } from '@emotion/react';
 import createCache from '@emotion/cache';
-import { noop, mergeWith } from 'lodash';
+import noop from 'lodash/noop';
+import mergeWith from 'lodash/mergeWith';
 import { GlobalStyles } from './GlobalStyles';
 import {
   AntdThemeConfig,

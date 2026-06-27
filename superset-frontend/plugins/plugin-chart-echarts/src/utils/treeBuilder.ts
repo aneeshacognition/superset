@@ -17,7 +17,8 @@
  * under the License.
  */
 import { DataRecord, DataRecordValue } from '@superset-ui/core';
-import { groupBy as _groupBy, transform } from 'lodash';
+import _groupBy from 'lodash/groupBy';
+import transform from 'lodash/transform';
 
 export type TreeNode = {
   name: DataRecordValue;

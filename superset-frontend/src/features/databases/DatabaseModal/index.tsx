@@ -63,7 +63,8 @@ import {
 } from 'src/views/CRUD/hooks';
 import { FileEncryptedExtraFields } from 'src/views/CRUD/types';
 import { useCommonConf } from 'src/features/databases/state';
-import { isEmpty, pick } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import pick from 'lodash/pick';
 import { OnlyKeyWithType } from 'src/utils/types';
 import { ModalTitleWithIcon } from 'src/components/ModalTitleWithIcon';
 import {

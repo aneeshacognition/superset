@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { omit } from 'lodash';
-
+import omit from 'lodash/omit';
 import {
   AdhocColumn,
   isAdhocColumn,

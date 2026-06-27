@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { snakeCase, cloneDeep } from 'lodash';
+import snakeCase from 'lodash/snakeCase';
+import cloneDeep from 'lodash/cloneDeep';
 import {
   useCallback,
   useEffect,

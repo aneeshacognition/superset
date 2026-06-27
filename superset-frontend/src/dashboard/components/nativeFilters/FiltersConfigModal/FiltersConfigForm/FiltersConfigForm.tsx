@@ -38,7 +38,8 @@ import {
 } from '@superset-ui/core';
 import { styled, useTheme, css } from '@apache-superset/core/theme';
 import { GenericDataType } from '@apache-superset/core/common';
-import { debounce, isEqual } from 'lodash';
+import debounce from 'lodash/debounce';
+import isEqual from 'lodash/isEqual';
 import {
   forwardRef,
   useCallback,

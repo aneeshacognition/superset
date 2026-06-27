@@ -59,8 +59,8 @@ import {
   sections,
 } from '@superset-ui/chart-controls';
 import { useSelector } from 'react-redux';
-import { kebabCase, isEqual } from 'lodash';
-
+import kebabCase from 'lodash/kebabCase';
+import isEqual from 'lodash/isEqual';
 import {
   Collapse,
   Loading,

@@ -45,7 +45,8 @@ import {
   ColorSchemeEnum,
 } from '@superset-ui/chart-controls';
 
-import { isEmpty, merge } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import merge from 'lodash/merge';
 import isEqualColumns from './utils/isEqualColumns';
 import DateWithFormatter from './utils/DateWithFormatter';
 import {
