@@ -24,13 +24,6 @@ const isTest =
 const basePlugins = [
   'lodash',
   '@babel/plugin-transform-export-namespace-from',
-  [
-    '@emotion/babel-plugin',
-    {
-      autoLabel: 'dev-only',
-      labelFormat: '[local]',
-    },
-  ],
 ];
 
 const buildPlugins = [
@@ -79,13 +72,6 @@ module.exports = {
             exclude: ['transform-typeof-symbol'],
           },
         ],
-        [
-          '@babel/preset-react',
-          {
-            development: process.env.BABEL_ENV === 'development',
-            runtime: 'automatic',
-          },
-        ],
         '@babel/preset-typescript',
       ]
     : [
@@ -94,13 +80,6 @@ module.exports = {
           {
             modules: false,
             exclude: ['transform-typeof-symbol'],
-          },
-        ],
-        [
-          '@babel/preset-react',
-          {
-            development: process.env.BABEL_ENV === 'development',
-            runtime: 'automatic',
           },
         ],
         '@babel/preset-typescript',
@@ -142,6 +121,21 @@ module.exports = {
     {
       test: './plugins/plugin-chart-handlebars/node_modules/just-handlebars-helpers/*',
       sourceType: 'unambiguous',
+    },
+    {
+      // Only apply @babel/preset-react to JSX-capable files (.tsx, .jsx, .js)
+      // This prevents angle-bracket type assertions in .ts files from being
+      // parsed as JSX elements.
+      test: /\.(tsx|jsx|js)$/,
+      presets: [
+        [
+          '@babel/preset-react',
+          {
+            development: process.env.BABEL_ENV === 'development',
+            runtime: 'automatic',
+          },
+        ],
+      ],
     },
   ],
 };
