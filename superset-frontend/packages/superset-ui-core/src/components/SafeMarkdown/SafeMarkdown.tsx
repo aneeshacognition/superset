@@ -18,9 +18,6 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
-// TODO: Upgrade to remark-gfm v4+ after migrating to React 18.
-// remark-gfm v4+ requires react-markdown v9+, which requires React 18.
-// Currently pinned to v3.0.1 for compatibility with react-markdown v8 and React 17.
 import remarkGfm from 'remark-gfm';
 import { cloneDeep, mergeWith } from 'lodash';
 import { FeatureFlag, isFeatureEnabled } from '../../utils';
@@ -42,7 +39,7 @@ const DANGEROUS_LINK_PROTOCOLS = ['javascript', 'vbscript', 'data'];
  * everything else (http(s), mailto, relative URLs, anchors and custom schemes)
  * untouched. Applied regardless of the EscapeMarkdownHtml feature flag.
  */
-export function transformLinkUri(uri: string): string {
+export function urlTransform(uri: string): string {
   // Per the WHATWG URL parser, browsers strip leading C0 control
   // characters (\x00-\x1f) and space before resolving the scheme, so e.g.
   // "\x01javascript:alert(1)" executes on click. Strip them here too,
@@ -139,7 +136,7 @@ export function SafeMarkdown({
       rehypePlugins={rehypePlugins}
       remarkPlugins={[remarkGfm]}
       skipHtml={false}
-      transformLinkUri={transformLinkUri}
+      urlTransform={urlTransform}
     >
       {source}
     </ReactMarkdown>
