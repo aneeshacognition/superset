@@ -423,7 +423,8 @@
     },
     "eslint-plugin-jest-dom": {
       "eslint": "$eslint"
-    }
+    },
+    "currencyformatter.js": "^2.2.0"
   },
   "readme": "ERROR: No README data found!",
   "scarfSettings": {
