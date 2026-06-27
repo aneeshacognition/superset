@@ -90,7 +90,14 @@ jest.mock('src/hooks/useTabId', () => ({
 }));
 
 // Check https://github.com/remarkjs/react-markdown/issues/635
-jest.mock('react-markdown', () => (props: any) => <>{props.children}</>);
+jest.mock(
+  'react-markdown',
+  () => ({
+    __esModule: true,
+    default: (props: any) => <>{props.children}</>,
+  }),
+  { virtual: true },
+);
 jest.mock('rehype-sanitize', () => () => jest.fn());
 jest.mock('rehype-raw', () => () => jest.fn());
 
