@@ -12,9 +12,6 @@ updates:
     ignore:
       - dependency-name: "react-error-boundary"
       - dependency-name: "@rjsf/*"
-      # remark-gfm v4+ requires react-markdown v9+, which needs React 18
-      - dependency-name: "remark-gfm"
-      - dependency-name: "react-markdown"
       # TODO: remove below entries until React >= 19.0.0
       - dependency-name: "react-icons"
       # JSDOM v30 doesn't play well with Jest v30
@@ -370,9 +367,6 @@ updates:
   - package-ecosystem: "npm"
     directory: "/superset-frontend/packages/superset-ui-core/"
     ignore:
-      # not until React >= 18.0.0
-      - dependency-name: "react-markdown"
-      - dependency-name: "remark-gfm"
       - dependency-name: "react-error-boundary"
     schedule:
       interval: "daily"
