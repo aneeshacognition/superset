@@ -11,7 +11,6 @@ updates:
   - package-ecosystem: "npm"
     ignore:
       - dependency-name: "react-error-boundary"
-      - dependency-name: "@rjsf/*"
       # remark-gfm v4+ requires react-markdown v9+, which needs React 18
       - dependency-name: "remark-gfm"
       - dependency-name: "react-markdown"
