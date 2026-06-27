@@ -17,10 +17,6 @@ updates:
       - dependency-name: "react-markdown"
       # TODO: remove below entries until React >= 19.0.0
       - dependency-name: "react-icons"
-      # JSDOM v30 doesn't play well with Jest v30
-      # Source: https://jestjs.io/blog#known-issues
-      # GH thread: https://github.com/jsdom/jsdom/issues/3492
-      - dependency-name: "jest-environment-jsdom"
       # `@swc/plugin-transform-imports` doesn't work with current Webpack-SWC hybrid setup
       # See https://github.com/apache/superset/pull/37384#issuecomment-3793991389
       # TODO: remove the plugin once Lodash usage has been migrated to a more readily tree-shakeable alternative
