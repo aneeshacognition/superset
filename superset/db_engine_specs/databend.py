@@ -305,19 +305,15 @@ class DatabendConnectEngineSpec(BasicParametersMixin, DatabendEngineSpec):
         if not url_params.get("database"):
             url_params["database"] = "__default__"
         url_params.pop("encryption", None)
-        return str(URL(f"{cls.engine}", **url_params))
+        return str(URL.create(f"{cls.engine}", **url_params))
 
     @classmethod
     def get_parameters_from_uri(
         cls, uri: str, *_args: dict[str, Any] | None
     ) -> BasicParametersType:
         url = make_url_safe(uri)
-        query = url.query
-        if "secure" in query:
-            encryption = url.query.get("secure") == "true"
-            query.pop("secure")
-        else:
-            encryption = False
+        query = dict(url.query)
+        encryption = query.pop("secure", None) == "true"
         return BasicParametersType(
             username=url.username,
             password=url.password,
