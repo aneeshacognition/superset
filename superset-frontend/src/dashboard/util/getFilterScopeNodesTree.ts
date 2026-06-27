@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { t } from '@apache-superset/core/translation';
 
 import { DASHBOARD_ROOT_ID } from './constants';

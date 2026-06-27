@@ -19,7 +19,8 @@
 
 import { useState } from 'react';
 import fetchMock from 'fetch-mock';
-import { omit, omitBy } from 'lodash';
+import omit from 'lodash/omit';
+import omitBy from 'lodash/omitBy';
 import {
   render,
   screen,

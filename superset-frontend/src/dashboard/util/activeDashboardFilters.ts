@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { isEmpty } from 'lodash';
-import { mapValues, flow, keyBy } from 'lodash/fp';
+import isEmpty from 'lodash/isEmpty';
+import mapValues from 'lodash/fp/mapValues';
+import flow from 'lodash/fp/flow';
+import keyBy from 'lodash/fp/keyBy';
 import {
   JsonValue,
   DataRecordFilters,

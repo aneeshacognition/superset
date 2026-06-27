@@ -37,7 +37,7 @@ import {
   Operators,
 } from 'src/explore/constants';
 import rison from 'rison';
-import { isObject } from 'lodash';
+import isObject from 'lodash/isObject';
 import { ExpressionTypes } from '../types';
 
 interface LayerOption {

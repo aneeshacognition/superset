@@ -305,21 +305,6 @@ function createSwcLoader(syntax = 'typescript', tsx = true) {
                 labelFormat: '[local]',
               },
             ],
-            [
-              '@swc/plugin-transform-imports',
-              {
-                lodash: {
-                  transform: 'lodash/{{member}}',
-                  preventFullImport: true,
-                  skipDefaultConversion: false,
-                },
-                'lodash-es': {
-                  transform: 'lodash-es/{{member}}',
-                  preventFullImport: true,
-                  skipDefaultConversion: false,
-                },
-              },
-            ],
           ],
         },
       },

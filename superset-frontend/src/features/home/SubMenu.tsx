@@ -27,7 +27,7 @@ import {
   useTheme,
 } from '@apache-superset/core/theme';
 import cx from 'classnames';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { Menu, MenuMode } from '@superset-ui/core/components/Menu';
 import {
   Button,

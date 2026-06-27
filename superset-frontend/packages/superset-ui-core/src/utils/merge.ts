@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { mergeWith } from 'lodash';
-
+import mergeWith from 'lodash/mergeWith';
 /**
  * Merges objects using lodash.mergeWith, but replaces arrays instead of concatenating them.
  * This is useful for configuration objects where you want to completely override array values

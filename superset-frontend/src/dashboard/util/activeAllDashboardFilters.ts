@@ -22,7 +22,7 @@ import {
   JsonObject,
   PartialFilters,
 } from '@superset-ui/core';
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 import { ActiveFilters, ChartConfiguration } from '../types';
 
 export const getRelevantDataMask = (

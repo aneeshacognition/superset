@@ -16,9 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { flow, keyBy, mapValues } from 'lodash/fp';
-import { flatMap, isEmpty } from 'lodash';
-
+import flow from 'lodash/fp/flow';
+import keyBy from 'lodash/fp/keyBy';
+import mapValues from 'lodash/fp/mapValues';
+import flatMap from 'lodash/flatMap';
+import isEmpty from 'lodash/isEmpty';
 import { CHART_TYPE, TAB_TYPE } from './componentTypes';
 import { getChartIdAndColumnFromFilterKey } from './getDashboardFilterKey';
 

@@ -30,7 +30,7 @@ import {
   Icons,
 } from '@superset-ui/core/components';
 import { useState, useEffect, useMemo } from 'react';
-import { capitalize } from 'lodash/fp';
+import capitalize from 'lodash/fp/capitalize';
 import { addDangerToast } from 'src/components/MessageToasts/actions';
 import { useDispatch } from 'react-redux';
 import getBootstrapData from 'src/utils/getBootstrapData';

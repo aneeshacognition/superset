@@ -34,7 +34,7 @@ import {
   makeApi,
 } from '@superset-ui/core';
 import { logging } from '@apache-superset/core/utils';
-import { omitBy } from 'lodash';
+import omitBy from 'lodash/omitBy';
 import type { Plugin, PluginAction, PluginContextType } from './types';
 
 const metadataRegistry = getChartMetadataRegistry();

@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { isEmpty } from 'lodash';
-
+import isEmpty from 'lodash/isEmpty';
 import { QueryObject } from './types';
 
 export default function normalizeOrderBy(

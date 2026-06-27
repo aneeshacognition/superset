@@ -17,7 +17,8 @@
  * under the License.
  */
 import memoizeOne from 'memoize-one';
-import { isString, isBoolean } from 'lodash';
+import isString from 'lodash/isString';
+import isBoolean from 'lodash/isBoolean';
 import { isBlank } from '@apache-superset/core/utils';
 import { addAlpha, DataRecord } from '@superset-ui/core';
 import tinycolor from 'tinycolor2';

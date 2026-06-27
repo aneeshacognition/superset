@@ -75,7 +75,9 @@ import {
   PlusCircleOutlined,
   TableOutlined,
 } from '@ant-design/icons';
-import { isEmpty, debounce, isEqual } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import debounce from 'lodash/debounce';
+import isEqual from 'lodash/isEqual';
 import {
   ColorFormatters,
   getTextColorForBackground,

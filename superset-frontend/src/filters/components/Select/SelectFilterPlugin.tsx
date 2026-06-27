@@ -31,7 +31,8 @@ import {
 import { tn } from '@apache-superset/core/translation';
 import { styled } from '@apache-superset/core/theme';
 import { GenericDataType } from '@apache-superset/core/common';
-import { debounce, isUndefined } from 'lodash';
+import debounce from 'lodash/debounce';
+import isUndefined from 'lodash/isUndefined';
 import { useImmerReducer } from 'use-immer';
 import {
   FormItem,
