@@ -18,62 +18,82 @@
  */
 const packageConfig = require('./package');
 
+const isTest =
+  process.env.NODE_ENV === 'test' || process.env.BABEL_ENV === 'test';
+
+const basePlugins = [
+  'lodash',
+  '@babel/plugin-transform-export-namespace-from',
+  [
+    '@emotion/babel-plugin',
+    {
+      autoLabel: 'dev-only',
+      labelFormat: '[local]',
+    },
+  ],
+];
+
+const buildPlugins = [
+  ...basePlugins,
+  '@babel/plugin-transform-runtime',
+  [
+    'babel-plugin-polyfill-corejs3',
+    {
+      method: 'usage-global',
+      version: '3.38',
+    },
+  ],
+];
+
+const testPlugins = [...basePlugins, 'babel-plugin-dynamic-import-node'];
+
 module.exports = {
   sourceMaps: true,
   sourceType: 'module',
   retainLines: true,
-  presets: [
-    [
-      '@babel/preset-env',
-      {
-        useBuiltIns: 'usage',
-        corejs: 3,
-        loose: true,
-        modules: false,
-        shippedProposals: true,
-        targets: packageConfig.browserslist,
-      },
-    ],
-    [
-      '@babel/preset-react',
-      {
-        development: process.env.BABEL_ENV === 'development',
-        runtime: 'automatic',
-      },
-    ],
-    '@babel/preset-typescript',
-  ],
-  plugins: [
-    'lodash',
-    '@babel/plugin-syntax-dynamic-import',
-    '@babel/plugin-transform-export-namespace-from',
-    ['@babel/plugin-transform-class-properties', { loose: true }],
-    '@babel/plugin-transform-class-static-block',
-    ['@babel/plugin-transform-optional-chaining', { loose: true }],
-    ['@babel/plugin-transform-private-methods', { loose: true }],
-    ['@babel/plugin-transform-nullish-coalescing-operator', { loose: true }],
-    ['@babel/plugin-transform-runtime', { corejs: 3 }],
-    [
-      '@emotion/babel-plugin',
-      {
-        autoLabel: 'dev-only',
-        labelFormat: '[local]',
-      },
-    ],
-  ],
-  env: {
-    // Setup a different config for tests as they run in node instead of a browser
-    test: {
-      presets: [
+  targets: isTest ? { node: 'current' } : packageConfig.browserslist,
+  assumptions: {
+    arrayLikeIsIterable: true,
+    ignoreFunctionLength: true,
+    ignoreToPrimitiveHint: true,
+    mutableTemplateObject: true,
+    noClassCalls: true,
+    noDocumentAll: true,
+    objectRestNoSymbols: true,
+    privateFieldsAsProperties: true,
+    pureGetters: true,
+    setClassMethods: true,
+    setComputedProperties: true,
+    setPublicClassFields: true,
+    setSpreadProperties: true,
+    skipForOfIteratorClosing: true,
+    superIsCallableConstructor: true,
+  },
+  presets: isTest
+    ? [
         [
           '@babel/preset-env',
           {
-            useBuiltIns: 'usage',
-            corejs: 3,
-            loose: true,
-            shippedProposals: true,
-            modules: 'auto',
+            modules: 'commonjs',
             targets: { node: 'current' },
+            exclude: ['transform-typeof-symbol'],
+          },
+        ],
+        [
+          '@babel/preset-react',
+          {
+            development: process.env.BABEL_ENV === 'development',
+            runtime: 'automatic',
+          },
+        ],
+        '@babel/preset-typescript',
+      ]
+    : [
+        [
+          '@babel/preset-env',
+          {
+            modules: false,
+            exclude: ['transform-typeof-symbol'],
           },
         ],
         [
@@ -85,12 +105,8 @@ module.exports = {
         ],
         '@babel/preset-typescript',
       ],
-      plugins: [
-        'babel-plugin-dynamic-import-node',
-        '@babel/plugin-transform-modules-commonjs',
-        '@babel/plugin-transform-export-namespace-from',
-      ],
-    },
+  plugins: isTest ? testPlugins : buildPlugins,
+  env: {
     // build instrumented code for testing code coverage with Cypress
     instrumented: {
       plugins: [
