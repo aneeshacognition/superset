@@ -93,6 +93,7 @@ jest.mock('src/hooks/useTabId', () => ({
 jest.mock(
   'react-markdown',
   () => ({
+    __esModule: true,
     default: (props: any) => <>{props.children}</>,
   }),
   { virtual: true },
