@@ -33,7 +33,6 @@ export const SELECT_ALL_VALUE: RawValue = t('Select All');
 
 export const VIRTUAL_THRESHOLD = 20;
 
-
 export const SELECT_ALL_OPTION = {
   value: SELECT_ALL_VALUE,
   label: String(SELECT_ALL_VALUE),
