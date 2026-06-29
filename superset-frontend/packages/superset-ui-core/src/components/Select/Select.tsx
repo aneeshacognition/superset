@@ -692,7 +692,7 @@ const Select = forwardRef(
       } else {
         const separators = Array.isArray(tokenSeparators)
           ? tokenSeparators
-          : tokenSeparators?.(pastedText) ?? [];
+          : (tokenSeparators?.(pastedText) ?? []);
         const token = separators.find((t: string) => pastedText.includes(t));
         const array = token ? uniq(pastedText.split(token)) : [pastedText];
 
