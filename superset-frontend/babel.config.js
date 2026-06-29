@@ -56,16 +56,17 @@ module.exports = {
     superIsCallableConstructor: true,
   },
   presets: [
-    [
-      '@babel/preset-env',
-      isTest ? { modules: 'commonjs' } : { modules: false },
-    ],
+    ['@babel/preset-env', { modules: false }],
     '@babel/preset-typescript',
   ],
   plugins: [
-    'lodash',
+    ...(isTest ? [] : ['lodash']),
     ...(isTest
-      ? ['babel-plugin-dynamic-import-node']
+      ? [
+          '@babel/plugin-transform-export-namespace-from',
+          '@babel/plugin-transform-dynamic-import',
+          ['@babel/plugin-transform-modules-commonjs', { lazy: () => true }],
+        ]
       : [
           '@babel/plugin-transform-runtime',
           ['babel-plugin-polyfill-corejs3', { method: 'usage-pure' }],
