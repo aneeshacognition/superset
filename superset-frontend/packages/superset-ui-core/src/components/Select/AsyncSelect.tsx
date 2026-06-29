@@ -669,7 +669,10 @@ const AsyncSelect = forwardRef(
           setSelectValue(value);
         }
       } else {
-        const token = tokenSeparators.find(token => pastedText.includes(token));
+        const separators = Array.isArray(tokenSeparators)
+          ? tokenSeparators
+          : (tokenSeparators?.(pastedText) ?? []);
+        const token = separators.find((t: string) => pastedText.includes(t));
         const array = token ? uniq(pastedText.split(token)) : [pastedText];
         const values = (
           await Promise.all(array.map(item => getPastedTextValue(item)))
@@ -721,10 +724,10 @@ const AsyncSelect = forwardRef(
           options={fullSelectOptions}
           optionRender={option => <Space>{option.label || option.value}</Space>}
           placeholder={placeholder}
-          showSearch={allowNewOptions ? true : showSearch}
+          showSearch={allowNewOptions ? true : !!showSearch}
           tokenSeparators={tokenSeparators}
           value={selectValue}
-          suffixIcon={getSuffixIcon(isLoading, showSearch, isDropdownVisible)}
+          suffixIcon={getSuffixIcon(isLoading, !!showSearch, isDropdownVisible)}
           menuItemSelectedIcon={
             invertSelection ? (
               <StyledStopOutlined iconSize="m" aria-label="stop" />

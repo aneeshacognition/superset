@@ -64,7 +64,6 @@ import {
 } from './styles';
 import {
   DEFAULT_SORT_COMPARATOR,
-  DROPDOWN_ALIGN_BOTTOM,
   EMPTY_OPTIONS,
   MAX_TAG_COUNT,
   TOKEN_SEPARATORS,
@@ -127,7 +126,7 @@ const Select = forwardRef(
     ref: Ref<RefSelectProps>,
   ) => {
     const isSingleMode = mode === 'single';
-    const shouldShowSearch = allowNewOptions ? true : showSearch;
+    const shouldShowSearch = allowNewOptions ? true : !!showSearch;
     const [selectValue, setSelectValue] = useState(value);
     const [inputValue, setInputValue] = useState('');
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -691,7 +690,10 @@ const Select = forwardRef(
           setSelectValue(value);
         }
       } else {
-        const token = tokenSeparators.find(token => pastedText.includes(token));
+        const separators = Array.isArray(tokenSeparators)
+          ? tokenSeparators
+          : (tokenSeparators?.(pastedText) ?? []);
+        const token = separators.find((t: string) => pastedText.includes(t));
         const array = token ? uniq(pastedText.split(token)) : [pastedText];
 
         const newOptions: SelectOptionsType = [];
@@ -798,7 +800,6 @@ const Select = forwardRef(
           oneLine={oneLine}
           popupMatchSelectWidth={oneLine ? dropdownWidth : true}
           css={props.css}
-          dropdownAlign={DROPDOWN_ALIGN_BOTTOM}
           {...props}
           showSearch={shouldShowSearch}
           ref={ref}
