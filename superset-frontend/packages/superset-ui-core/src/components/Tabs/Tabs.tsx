@@ -48,17 +48,17 @@ const StyledTabs = ({
       overflow: ${allowOverflow ? 'visible' : 'hidden'};
       ${fullHeight && 'height: 100%;'}
 
-      .ant-tabs-content-holder {
+      .ant-tabs-body-holder {
         overflow: ${allowOverflow ? 'visible' : 'auto'};
         ${fullHeight && 'height: 100%;'}
         ${contentHeight &&
         `height: ${typeof contentHeight === 'number' ? `${contentHeight}px` : contentHeight};`}
         ${contentPadding}
       }
-      .ant-tabs-content {
+      .ant-tabs-body {
         ${fullHeight && 'height: 100%;'}
       }
-      .ant-tabs-tabpane {
+      .ant-tabs-content {
         ${fullHeight && 'height: 100%;'}
         ${contentStyle}
       }
@@ -108,7 +108,7 @@ const Tabs = Object.assign(StyledTabs, {
 
 const StyledEditableTabs = styled(StyledTabs)`
   ${({ theme, contentStyle }) => `
-    .ant-tabs-content-holder {
+    .ant-tabs-body-holder {
       background: ${theme.colorBgContainer};
       ${contentStyle}
     }
