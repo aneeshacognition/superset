@@ -18,79 +18,61 @@
  */
 const packageConfig = require('./package');
 
+// Babel 8 renamed JSX builder helpers from jSX* to jsx* (lowercase).
+// babel-plugin-jsx-remove-data-test-id still calls t.jSXOpeningElement.
+// Because @babel/types is ESM in Babel 8, require() returns a fresh CJS
+// wrapper each time, so module-level patching is ineffective.  Wrap the
+// plugin with a Proxy that maps the old names to the new ones.
+const _origRemoveTestId = require('babel-plugin-jsx-remove-data-test-id');
+const _removeTestIdFn = _origRemoveTestId.default || _origRemoveTestId;
+function removeDataTestIdCompat(api, options) {
+  const proxiedTypes = new Proxy(api.types, {
+    get(target, prop, receiver) {
+      if (prop === 'jSXOpeningElement') return target.jsxOpeningElement;
+      if (prop === 'isJSXOpeningElement') return target.isJSXOpeningElement;
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+  return _removeTestIdFn({ ...api, types: proxiedTypes }, options);
+}
+
+const isTest =
+  process.env.NODE_ENV === 'test' || process.env.BABEL_ENV === 'test';
+
 module.exports = {
   sourceMaps: true,
   sourceType: 'module',
   retainLines: true,
+  targets: isTest ? { node: 'current' } : packageConfig.browserslist,
+  assumptions: {
+    constantSuper: true,
+    noDocumentAll: true,
+    objectRestNoSymbols: true,
+    privateFieldsAsProperties: true,
+    pureGetters: true,
+    setComputedProperties: true,
+    setPublicClassFields: true,
+    setSpreadProperties: true,
+    superIsCallableConstructor: true,
+  },
   presets: [
-    [
-      '@babel/preset-env',
-      {
-        useBuiltIns: 'usage',
-        corejs: 3,
-        loose: true,
-        modules: false,
-        shippedProposals: true,
-        targets: packageConfig.browserslist,
-      },
-    ],
-    [
-      '@babel/preset-react',
-      {
-        development: process.env.BABEL_ENV === 'development',
-        runtime: 'automatic',
-      },
-    ],
+    ['@babel/preset-env', { modules: false }],
     '@babel/preset-typescript',
   ],
   plugins: [
-    'lodash',
-    '@babel/plugin-syntax-dynamic-import',
-    '@babel/plugin-transform-export-namespace-from',
-    ['@babel/plugin-transform-class-properties', { loose: true }],
-    '@babel/plugin-transform-class-static-block',
-    ['@babel/plugin-transform-optional-chaining', { loose: true }],
-    ['@babel/plugin-transform-private-methods', { loose: true }],
-    ['@babel/plugin-transform-nullish-coalescing-operator', { loose: true }],
-    ['@babel/plugin-transform-runtime', { corejs: 3 }],
-    [
-      '@emotion/babel-plugin',
-      {
-        autoLabel: 'dev-only',
-        labelFormat: '[local]',
-      },
-    ],
+    ...(isTest ? [] : ['lodash']),
+    ...(isTest
+      ? [
+          '@babel/plugin-transform-export-namespace-from',
+          '@babel/plugin-transform-dynamic-import',
+          ['@babel/plugin-transform-modules-commonjs', { lazy: () => true }],
+        ]
+      : [
+          '@babel/plugin-transform-runtime',
+          ['babel-plugin-polyfill-corejs3', { method: 'usage-pure' }],
+        ]),
   ],
   env: {
-    // Setup a different config for tests as they run in node instead of a browser
-    test: {
-      presets: [
-        [
-          '@babel/preset-env',
-          {
-            useBuiltIns: 'usage',
-            corejs: 3,
-            loose: true,
-            shippedProposals: true,
-            modules: 'auto',
-            targets: { node: 'current' },
-          },
-        ],
-        [
-          '@babel/preset-react',
-          {
-            development: process.env.BABEL_ENV === 'development',
-            runtime: 'automatic',
-          },
-        ],
-        '@babel/preset-typescript',
-      ],
-      plugins: [
-        'babel-plugin-dynamic-import-node',
-        '@babel/plugin-transform-modules-commonjs',
-        '@babel/plugin-transform-export-namespace-from',
-      ],
-    },
     // build instrumented code for testing code coverage with Cypress
     instrumented: {
       plugins: [
@@ -105,7 +87,7 @@ module.exports = {
     production: {
       plugins: [
         [
-          'babel-plugin-jsx-remove-data-test-id',
+          removeDataTestIdCompat,
           {
             // The plugin matches attribute names exactly (no prefix match),
             // so each data-test* attribute must be listed explicitly.
@@ -126,6 +108,22 @@ module.exports = {
     {
       test: './plugins/plugin-chart-handlebars/node_modules/just-handlebars-helpers/*',
       sourceType: 'unambiguous',
+    },
+    {
+      // Apply @babel/preset-react only to JSX-capable files (.tsx, .jsx, .js).
+      // This prevents angle-bracket type assertions in .ts files from being
+      // parsed as JSX elements (a Babel 8 parser change).
+      test: /\.(tsx|jsx|js)$/,
+      presets: [
+        [
+          '@babel/preset-react',
+          {
+            development: process.env.BABEL_ENV === 'development',
+            runtime: 'automatic',
+            importSource: '@emotion/react',
+          },
+        ],
+      ],
     },
   ],
 };
