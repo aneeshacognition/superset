@@ -45,19 +45,7 @@ jest.mock(
     ({ children }: { children: (params: { height: number }) => ReactChild }) =>
       children({ height: 500 }),
 );
-jest.mock('@superset-ui/core/components/IconTooltip', () => ({
-  IconTooltip: ({
-    onClick,
-    tooltip,
-  }: {
-    onClick: () => void;
-    tooltip: string;
-  }) => (
-    <button type="button" data-test="mock-icon-tooltip" onClick={onClick}>
-      {tooltip}
-    </button>
-  ),
-}));
+
 const getTableMetadataEndpoint =
   /\/api\/v1\/database\/\d+\/table_metadata\/(?:\?.*)?$/;
 const getExtraTableMetadataEndpoint =
@@ -142,7 +130,7 @@ test('renders preview', async () => {
 // eslint-disable-next-line no-restricted-globals -- TODO: Migrate from describe blocks
 describe('table actions', () => {
   test('refreshes table metadata when triggered', async () => {
-    const { getByRole } = render(<TablePreview {...mockedProps} />, {
+    render(<TablePreview {...mockedProps} />, {
       useRedux: true,
       initialState,
     });
@@ -151,7 +139,7 @@ describe('table actions', () => {
         fetchMock.callHistory.calls(getTableMetadataEndpoint),
       ).toHaveLength(1),
     );
-    const refreshButton = getByRole('button', { name: 'sync' });
+    const refreshButton = await screen.findByTestId('Refresh table schema');
     fireEvent.click(refreshButton);
     await waitFor(() =>
       expect(
@@ -161,7 +149,7 @@ describe('table actions', () => {
   });
 
   test('shows CREATE VIEW statement', async () => {
-    const { getByRole } = render(<TablePreview {...mockedProps} />, {
+    render(<TablePreview {...mockedProps} />, {
       useRedux: true,
       initialState,
     });
@@ -170,7 +158,7 @@ describe('table actions', () => {
         fetchMock.callHistory.calls(getTableMetadataEndpoint),
       ).toHaveLength(1),
     );
-    const viewButton = getByRole('button', { name: 'eye' });
+    const viewButton = await screen.findByTestId('Show CREATE VIEW statement');
     fireEvent.click(viewButton);
     await waitFor(() =>
       expect(
