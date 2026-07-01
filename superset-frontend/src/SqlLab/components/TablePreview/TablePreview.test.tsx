@@ -130,7 +130,7 @@ test('renders preview', async () => {
 // eslint-disable-next-line no-restricted-globals -- TODO: Migrate from describe blocks
 describe('table actions', () => {
   test('refreshes table metadata when triggered', async () => {
-    const { getByRole } = render(<TablePreview {...mockedProps} />, {
+    const { getByTestId } = render(<TablePreview {...mockedProps} />, {
       useRedux: true,
       initialState,
     });
@@ -139,7 +139,7 @@ describe('table actions', () => {
         fetchMock.callHistory.calls(getTableMetadataEndpoint),
       ).toHaveLength(1),
     );
-    const refreshButton = getByRole('button', { name: 'Refresh table schema' });
+    const refreshButton = getByTestId('Refresh table schema');
     fireEvent.click(refreshButton);
     await waitFor(() =>
       expect(
@@ -149,7 +149,7 @@ describe('table actions', () => {
   });
 
   test('shows CREATE VIEW statement', async () => {
-    const { getByRole } = render(<TablePreview {...mockedProps} />, {
+    const { getByTestId } = render(<TablePreview {...mockedProps} />, {
       useRedux: true,
       initialState,
     });
@@ -158,7 +158,7 @@ describe('table actions', () => {
         fetchMock.callHistory.calls(getTableMetadataEndpoint),
       ).toHaveLength(1),
     );
-    const viewButton = getByRole('button', { name: 'Show CREATE VIEW statement' });
+    const viewButton = getByTestId('Show CREATE VIEW statement');
     fireEvent.click(viewButton);
     await waitFor(() =>
       expect(
