@@ -325,7 +325,7 @@ export const StyledChartContainer = styled.div<{
       border: var(--ag-wrapper-border);
     }
 
-    .ag-input-wrapper {
+    .ag-input-field {
       ::before {
         z-index: 100;
       }
@@ -420,7 +420,7 @@ export const StyledChartContainer = styled.div<{
       }
     }
 
-    .ag-header-center {
+    .ag-header-row-column {
       .ag-header-cell-label {
         justify-content: center;
       }
