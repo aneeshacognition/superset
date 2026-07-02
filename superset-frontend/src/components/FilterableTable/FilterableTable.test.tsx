@@ -152,35 +152,27 @@ describe('FilterableTable sorting - RTL', () => {
       .closest('[role=button]');
 
     // Original order
-    expect(getGridCellsText()).toEqual(
-      ['Bravo', 'Alpha', 'Charlie'].join(''),
-    );
+    expect(getGridCellsText()).toEqual(['Bravo', 'Alpha', 'Charlie'].join(''));
 
     if (stringColumn) {
       // First click to sort ascending
       userEvent.click(stringColumn);
     }
 
-    expect(getGridCellsText()).toEqual(
-      ['Alpha', 'Bravo', 'Charlie'].join(''),
-    );
+    expect(getGridCellsText()).toEqual(['Alpha', 'Bravo', 'Charlie'].join(''));
 
     if (stringColumn) {
       // Second click to sort descending
       userEvent.click(stringColumn);
     }
 
-    expect(getGridCellsText()).toEqual(
-      ['Charlie', 'Bravo', 'Alpha'].join(''),
-    );
+    expect(getGridCellsText()).toEqual(['Charlie', 'Bravo', 'Alpha'].join(''));
 
     if (stringColumn) {
       // Third click to clear sorting
       userEvent.click(stringColumn);
     }
-    expect(getGridCellsText()).toEqual(
-      ['Bravo', 'Alpha', 'Charlie'].join(''),
-    );
+    expect(getGridCellsText()).toEqual(['Bravo', 'Alpha', 'Charlie'].join(''));
   });
 
   test('sorts integers correctly', () => {
