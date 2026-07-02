@@ -121,6 +121,12 @@ describe('FilterableTable', () => {
   });
 });
 
+function getGridCellTexts(): string[] {
+  return Array.from(
+    document.querySelectorAll('[role=gridcell]:not(.row-number-col)'),
+  ).map(cell => cell.textContent ?? '');
+}
+
 // eslint-disable-next-line no-restricted-globals -- TODO: Migrate from describe blocks
 describe('FilterableTable sorting - RTL', () => {
   beforeAll(() => {
@@ -142,38 +148,28 @@ describe('FilterableTable sorting - RTL', () => {
     const stringColumn = within(screen.getByRole('grid'))
       .getByText('columnA')
       .closest('[role=button]');
-    const gridCells = screen.getByText('Bravo').closest('[role=rowgroup]');
-
     // Original order
-    expect(gridCells?.textContent).toEqual(
-      ['Bravo', 'Alpha', 'Charlie'].join(''),
-    );
+    expect(getGridCellTexts()).toEqual(['Bravo', 'Alpha', 'Charlie']);
 
     if (stringColumn) {
       // First click to sort ascending
       userEvent.click(stringColumn);
     }
 
-    expect(gridCells?.textContent).toEqual(
-      ['Alpha', 'Bravo', 'Charlie'].join(''),
-    );
+    expect(getGridCellTexts()).toEqual(['Alpha', 'Bravo', 'Charlie']);
 
     if (stringColumn) {
       // Second click to sort descending
       userEvent.click(stringColumn);
     }
 
-    expect(gridCells?.textContent).toEqual(
-      ['Charlie', 'Bravo', 'Alpha'].join(''),
-    );
+    expect(getGridCellTexts()).toEqual(['Charlie', 'Bravo', 'Alpha']);
 
     if (stringColumn) {
       // Third click to clear sorting
       userEvent.click(stringColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      ['Bravo', 'Alpha', 'Charlie'].join(''),
-    );
+    expect(getGridCellTexts()).toEqual(['Bravo', 'Alpha', 'Charlie']);
   });
 
   test('sorts integers correctly', () => {
@@ -187,28 +183,26 @@ describe('FilterableTable sorting - RTL', () => {
     const integerColumn = within(screen.getByRole('grid'))
       .getByText('columnB')
       .closest('[role=button]');
-    const gridCells = screen.getByText('21').closest('[role=rowgroup]');
-
     // Original order
-    expect(gridCells?.textContent).toEqual(['21', '0', '623'].join(''));
+    expect(getGridCellTexts()).toEqual(['21', '0', '623']);
 
     // First click to sort ascending
     if (integerColumn) {
       userEvent.click(integerColumn);
     }
-    expect(gridCells?.textContent).toEqual(['0', '21', '623'].join(''));
+    expect(getGridCellTexts()).toEqual(['0', '21', '623']);
 
     // Second click to sort descending
     if (integerColumn) {
       userEvent.click(integerColumn);
     }
-    expect(gridCells?.textContent).toEqual(['623', '21', '0'].join(''));
+    expect(getGridCellTexts()).toEqual(['623', '21', '0']);
 
     // Third click to clear sorting
     if (integerColumn) {
       userEvent.click(integerColumn);
     }
-    expect(gridCells?.textContent).toEqual(['21', '0', '623'].join(''));
+    expect(getGridCellTexts()).toEqual(['21', '0', '623']);
   });
 
   test('sorts floating numbers correctly', () => {
@@ -222,36 +216,26 @@ describe('FilterableTable sorting - RTL', () => {
     const floatColumn = within(screen.getByRole('grid'))
       .getByText('columnC')
       .closest('[role=button]');
-    const gridCells = screen.getByText('45.67').closest('[role=rowgroup]');
-
     // Original order
-    expect(gridCells?.textContent).toEqual(
-      ['45.67', '1.23', '89.0000001'].join(''),
-    );
+    expect(getGridCellTexts()).toEqual(['45.67', '1.23', '89.0000001']);
 
     // First click to sort ascending
     if (floatColumn) {
       userEvent.click(floatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      ['1.23', '45.67', '89.0000001'].join(''),
-    );
+    expect(getGridCellTexts()).toEqual(['1.23', '45.67', '89.0000001']);
 
     // Second click to sort descending
     if (floatColumn) {
       userEvent.click(floatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      ['89.0000001', '45.67', '1.23'].join(''),
-    );
+    expect(getGridCellTexts()).toEqual(['89.0000001', '45.67', '1.23']);
 
     // Third click to clear sorting
     if (floatColumn) {
       userEvent.click(floatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      ['45.67', '1.23', '89.0000001'].join(''),
-    );
+    expect(getGridCellTexts()).toEqual(['45.67', '1.23', '89.0000001']);
   });
 
   test('sorts rows properly when floating numbers have mixed types', () => {
@@ -277,83 +261,73 @@ describe('FilterableTable sorting - RTL', () => {
     const mixedFloatColumn = within(screen.getByRole('grid'))
       .getByText('columnD')
       .closest('[role=button]');
-    const gridCells = screen.getByText('48710.92').closest('[role=rowgroup]');
-
     // Original order
-    expect(gridCells?.textContent).toEqual(
-      [
-        '48710.92',
-        '145776.56',
-        '72212.86',
-        '144729.96000000002',
-        '26260.210000000003',
-        '152718.97999999998',
-        '28550.59',
-        '24078.610000000004',
-        '98089.08000000002',
-        '3439718.0300000007',
-        '4528047.219999993',
-      ].join(''),
-    );
+    expect(getGridCellTexts()).toEqual([
+      '48710.92',
+      '145776.56',
+      '72212.86',
+      '144729.96000000002',
+      '26260.210000000003',
+      '152718.97999999998',
+      '28550.59',
+      '24078.610000000004',
+      '98089.08000000002',
+      '3439718.0300000007',
+      '4528047.219999993',
+    ]);
     // First click to sort ascending
     if (mixedFloatColumn) {
       userEvent.click(mixedFloatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      [
-        '24078.610000000004',
-        '26260.210000000003',
-        '28550.59',
-        '48710.92',
-        '72212.86',
-        '98089.08000000002',
-        '144729.96000000002',
-        '145776.56',
-        '152718.97999999998',
-        '3439718.0300000007',
-        '4528047.219999993',
-      ].join(''),
-    );
+    expect(getGridCellTexts()).toEqual([
+      '24078.610000000004',
+      '26260.210000000003',
+      '28550.59',
+      '48710.92',
+      '72212.86',
+      '98089.08000000002',
+      '144729.96000000002',
+      '145776.56',
+      '152718.97999999998',
+      '3439718.0300000007',
+      '4528047.219999993',
+    ]);
 
     // Second click to sort descending
     if (mixedFloatColumn) {
       userEvent.click(mixedFloatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      [
-        '4528047.219999993',
-        '3439718.0300000007',
-        '152718.97999999998',
-        '145776.56',
-        '144729.96000000002',
-        '98089.08000000002',
-        '72212.86',
-        '48710.92',
-        '28550.59',
-        '26260.210000000003',
-        '24078.610000000004',
-      ].join(''),
-    );
+    expect(getGridCellTexts()).toEqual([
+      '4528047.219999993',
+      '3439718.0300000007',
+      '152718.97999999998',
+      '145776.56',
+      '144729.96000000002',
+      '98089.08000000002',
+      '72212.86',
+      '48710.92',
+      '28550.59',
+      '26260.210000000003',
+      '24078.610000000004',
+    ]);
 
     // Third click to clear sorting
     if (mixedFloatColumn) {
       userEvent.click(mixedFloatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      [
-        '48710.92',
-        '145776.56',
-        '72212.86',
-        '144729.96000000002',
-        '26260.210000000003',
-        '152718.97999999998',
-        '28550.59',
-        '24078.610000000004',
-        '98089.08000000002',
-        '3439718.0300000007',
-        '4528047.219999993',
-      ].join(''),
-    );
+    expect(getGridCellTexts()).toEqual([
+      '48710.92',
+      '145776.56',
+      '72212.86',
+      '144729.96000000002',
+      '26260.210000000003',
+      '152718.97999999998',
+      '28550.59',
+      '24078.610000000004',
+      '98089.08000000002',
+      '3439718.0300000007',
+      '4528047.219999993',
+    ]);
   });
 
   test('sorts YYYY-MM-DD properly', () => {
@@ -375,67 +349,57 @@ describe('FilterableTable sorting - RTL', () => {
     const dsColumn = within(screen.getByRole('grid'))
       .getByText('columnDS')
       .closest('[role=button]');
-    const gridCells = screen.getByText('2021-01-01').closest('[role=rowgroup]');
-
     // Original order
-    expect(gridCells?.textContent).toEqual(
-      [
-        '2021-01-01',
-        '2022-01-01',
-        '2021-01-02',
-        '2021-01-03',
-        '2021-12-01',
-        '2021-10-01',
-        '2022-01-02',
-      ].join(''),
-    );
+    expect(getGridCellTexts()).toEqual([
+      '2021-01-01',
+      '2022-01-01',
+      '2021-01-02',
+      '2021-01-03',
+      '2021-12-01',
+      '2021-10-01',
+      '2022-01-02',
+    ]);
 
     // First click to sort ascending
     if (dsColumn) {
       userEvent.click(dsColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      [
-        '2021-01-01',
-        '2021-01-02',
-        '2021-01-03',
-        '2021-10-01',
-        '2021-12-01',
-        '2022-01-01',
-        '2022-01-02',
-      ].join(''),
-    );
+    expect(getGridCellTexts()).toEqual([
+      '2021-01-01',
+      '2021-01-02',
+      '2021-01-03',
+      '2021-10-01',
+      '2021-12-01',
+      '2022-01-01',
+      '2022-01-02',
+    ]);
 
     // Second click to sort descending
     if (dsColumn) {
       userEvent.click(dsColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      [
-        '2022-01-02',
-        '2022-01-01',
-        '2021-12-01',
-        '2021-10-01',
-        '2021-01-03',
-        '2021-01-02',
-        '2021-01-01',
-      ].join(''),
-    );
+    expect(getGridCellTexts()).toEqual([
+      '2022-01-02',
+      '2022-01-01',
+      '2021-12-01',
+      '2021-10-01',
+      '2021-01-03',
+      '2021-01-02',
+      '2021-01-01',
+    ]);
 
     // Third click to clear sorting
     if (dsColumn) {
       userEvent.click(dsColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      [
-        '2021-01-01',
-        '2022-01-01',
-        '2021-01-02',
-        '2021-01-03',
-        '2021-12-01',
-        '2021-10-01',
-        '2022-01-02',
-      ].join(''),
-    );
+    expect(getGridCellTexts()).toEqual([
+      '2021-01-01',
+      '2022-01-01',
+      '2021-01-02',
+      '2021-01-03',
+      '2021-12-01',
+      '2021-10-01',
+      '2022-01-02',
+    ]);
   });
 });
