@@ -143,7 +143,9 @@ describe('FilterableTable sorting - RTL', () => {
       .getByText('columnA')
       .closest('[role=button]');
     const getCellTexts = () =>
-      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+      Array.from(
+        document.querySelectorAll('[role=gridcell]:not(.row-number-col)'),
+      )
         .map(el => el.textContent)
         .join('');
 
@@ -183,7 +185,9 @@ describe('FilterableTable sorting - RTL', () => {
       .getByText('columnB')
       .closest('[role=button]');
     const getCellTexts = () =>
-      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+      Array.from(
+        document.querySelectorAll('[role=gridcell]:not(.row-number-col)'),
+      )
         .map(el => el.textContent)
         .join('');
 
@@ -221,38 +225,32 @@ describe('FilterableTable sorting - RTL', () => {
       .getByText('columnC')
       .closest('[role=button]');
     const getCellTexts = () =>
-      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+      Array.from(
+        document.querySelectorAll('[role=gridcell]:not(.row-number-col)'),
+      )
         .map(el => el.textContent)
         .join('');
 
     // Original order
-    expect(getCellTexts()).toEqual(
-      ['45.67', '1.23', '89.0000001'].join(''),
-    );
+    expect(getCellTexts()).toEqual(['45.67', '1.23', '89.0000001'].join(''));
 
     // First click to sort ascending
     if (floatColumn) {
       userEvent.click(floatColumn);
     }
-    expect(getCellTexts()).toEqual(
-      ['1.23', '45.67', '89.0000001'].join(''),
-    );
+    expect(getCellTexts()).toEqual(['1.23', '45.67', '89.0000001'].join(''));
 
     // Second click to sort descending
     if (floatColumn) {
       userEvent.click(floatColumn);
     }
-    expect(getCellTexts()).toEqual(
-      ['89.0000001', '45.67', '1.23'].join(''),
-    );
+    expect(getCellTexts()).toEqual(['89.0000001', '45.67', '1.23'].join(''));
 
     // Third click to clear sorting
     if (floatColumn) {
       userEvent.click(floatColumn);
     }
-    expect(getCellTexts()).toEqual(
-      ['45.67', '1.23', '89.0000001'].join(''),
-    );
+    expect(getCellTexts()).toEqual(['45.67', '1.23', '89.0000001'].join(''));
   });
 
   test('sorts rows properly when floating numbers have mixed types', () => {
@@ -279,7 +277,9 @@ describe('FilterableTable sorting - RTL', () => {
       .getByText('columnD')
       .closest('[role=button]');
     const getCellTexts = () =>
-      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+      Array.from(
+        document.querySelectorAll('[role=gridcell]:not(.row-number-col)'),
+      )
         .map(el => el.textContent)
         .join('');
 
@@ -380,7 +380,9 @@ describe('FilterableTable sorting - RTL', () => {
       .getByText('columnDS')
       .closest('[role=button]');
     const getCellTexts = () =>
-      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+      Array.from(
+        document.querySelectorAll('[role=gridcell]:not(.row-number-col)'),
+      )
         .map(el => el.textContent)
         .join('');
 
