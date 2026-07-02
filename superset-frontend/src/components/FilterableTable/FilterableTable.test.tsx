@@ -142,38 +142,33 @@ describe('FilterableTable sorting - RTL', () => {
     const stringColumn = within(screen.getByRole('grid'))
       .getByText('columnA')
       .closest('[role=button]');
-    const gridCells = screen.getByText('Bravo').closest('[role=rowgroup]');
+    const getCellTexts = () =>
+      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+        .map(el => el.textContent)
+        .join('');
 
     // Original order
-    expect(gridCells?.textContent).toEqual(
-      ['Bravo', 'Alpha', 'Charlie'].join(''),
-    );
+    expect(getCellTexts()).toEqual(['Bravo', 'Alpha', 'Charlie'].join(''));
 
     if (stringColumn) {
       // First click to sort ascending
       userEvent.click(stringColumn);
     }
 
-    expect(gridCells?.textContent).toEqual(
-      ['Alpha', 'Bravo', 'Charlie'].join(''),
-    );
+    expect(getCellTexts()).toEqual(['Alpha', 'Bravo', 'Charlie'].join(''));
 
     if (stringColumn) {
       // Second click to sort descending
       userEvent.click(stringColumn);
     }
 
-    expect(gridCells?.textContent).toEqual(
-      ['Charlie', 'Bravo', 'Alpha'].join(''),
-    );
+    expect(getCellTexts()).toEqual(['Charlie', 'Bravo', 'Alpha'].join(''));
 
     if (stringColumn) {
       // Third click to clear sorting
       userEvent.click(stringColumn);
     }
-    expect(gridCells?.textContent).toEqual(
-      ['Bravo', 'Alpha', 'Charlie'].join(''),
-    );
+    expect(getCellTexts()).toEqual(['Bravo', 'Alpha', 'Charlie'].join(''));
   });
 
   test('sorts integers correctly', () => {
@@ -187,28 +182,31 @@ describe('FilterableTable sorting - RTL', () => {
     const integerColumn = within(screen.getByRole('grid'))
       .getByText('columnB')
       .closest('[role=button]');
-    const gridCells = screen.getByText('21').closest('[role=rowgroup]');
+    const getCellTexts = () =>
+      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+        .map(el => el.textContent)
+        .join('');
 
     // Original order
-    expect(gridCells?.textContent).toEqual(['21', '0', '623'].join(''));
+    expect(getCellTexts()).toEqual(['21', '0', '623'].join(''));
 
     // First click to sort ascending
     if (integerColumn) {
       userEvent.click(integerColumn);
     }
-    expect(gridCells?.textContent).toEqual(['0', '21', '623'].join(''));
+    expect(getCellTexts()).toEqual(['0', '21', '623'].join(''));
 
     // Second click to sort descending
     if (integerColumn) {
       userEvent.click(integerColumn);
     }
-    expect(gridCells?.textContent).toEqual(['623', '21', '0'].join(''));
+    expect(getCellTexts()).toEqual(['623', '21', '0'].join(''));
 
     // Third click to clear sorting
     if (integerColumn) {
       userEvent.click(integerColumn);
     }
-    expect(gridCells?.textContent).toEqual(['21', '0', '623'].join(''));
+    expect(getCellTexts()).toEqual(['21', '0', '623'].join(''));
   });
 
   test('sorts floating numbers correctly', () => {
@@ -222,10 +220,13 @@ describe('FilterableTable sorting - RTL', () => {
     const floatColumn = within(screen.getByRole('grid'))
       .getByText('columnC')
       .closest('[role=button]');
-    const gridCells = screen.getByText('45.67').closest('[role=rowgroup]');
+    const getCellTexts = () =>
+      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+        .map(el => el.textContent)
+        .join('');
 
     // Original order
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       ['45.67', '1.23', '89.0000001'].join(''),
     );
 
@@ -233,7 +234,7 @@ describe('FilterableTable sorting - RTL', () => {
     if (floatColumn) {
       userEvent.click(floatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       ['1.23', '45.67', '89.0000001'].join(''),
     );
 
@@ -241,7 +242,7 @@ describe('FilterableTable sorting - RTL', () => {
     if (floatColumn) {
       userEvent.click(floatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       ['89.0000001', '45.67', '1.23'].join(''),
     );
 
@@ -249,7 +250,7 @@ describe('FilterableTable sorting - RTL', () => {
     if (floatColumn) {
       userEvent.click(floatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       ['45.67', '1.23', '89.0000001'].join(''),
     );
   });
@@ -277,10 +278,13 @@ describe('FilterableTable sorting - RTL', () => {
     const mixedFloatColumn = within(screen.getByRole('grid'))
       .getByText('columnD')
       .closest('[role=button]');
-    const gridCells = screen.getByText('48710.92').closest('[role=rowgroup]');
+    const getCellTexts = () =>
+      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+        .map(el => el.textContent)
+        .join('');
 
     // Original order
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       [
         '48710.92',
         '145776.56',
@@ -299,7 +303,7 @@ describe('FilterableTable sorting - RTL', () => {
     if (mixedFloatColumn) {
       userEvent.click(mixedFloatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       [
         '24078.610000000004',
         '26260.210000000003',
@@ -319,7 +323,7 @@ describe('FilterableTable sorting - RTL', () => {
     if (mixedFloatColumn) {
       userEvent.click(mixedFloatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       [
         '4528047.219999993',
         '3439718.0300000007',
@@ -339,7 +343,7 @@ describe('FilterableTable sorting - RTL', () => {
     if (mixedFloatColumn) {
       userEvent.click(mixedFloatColumn);
     }
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       [
         '48710.92',
         '145776.56',
@@ -375,10 +379,13 @@ describe('FilterableTable sorting - RTL', () => {
     const dsColumn = within(screen.getByRole('grid'))
       .getByText('columnDS')
       .closest('[role=button]');
-    const gridCells = screen.getByText('2021-01-01').closest('[role=rowgroup]');
+    const getCellTexts = () =>
+      Array.from(document.querySelectorAll('[role=gridcell]:not(.row-number-col)'))
+        .map(el => el.textContent)
+        .join('');
 
     // Original order
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       [
         '2021-01-01',
         '2022-01-01',
@@ -394,7 +401,7 @@ describe('FilterableTable sorting - RTL', () => {
     if (dsColumn) {
       userEvent.click(dsColumn);
     }
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       [
         '2021-01-01',
         '2021-01-02',
@@ -410,7 +417,7 @@ describe('FilterableTable sorting - RTL', () => {
     if (dsColumn) {
       userEvent.click(dsColumn);
     }
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       [
         '2022-01-02',
         '2022-01-01',
@@ -426,7 +433,7 @@ describe('FilterableTable sorting - RTL', () => {
     if (dsColumn) {
       userEvent.click(dsColumn);
     }
-    expect(gridCells?.textContent).toEqual(
+    expect(getCellTexts()).toEqual(
       [
         '2021-01-01',
         '2022-01-01',
