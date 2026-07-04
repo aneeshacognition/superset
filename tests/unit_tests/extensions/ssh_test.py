@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+from io import StringIO
 from unittest.mock import Mock, patch
 
 import paramiko
@@ -443,3 +444,36 @@ def test_ssh_tunnel_schema_round_trips_server_host_key() -> None:
     }
     loaded = DatabaseSSHTunnel().load(payload)
     assert loaded["server_host_key"] == authorized
+
+
+def test_sshtunnel_key_discovery_does_not_require_dsskey() -> None:
+    """paramiko 4.0+ removed ``DSSKey``; the shim keeps sshtunnel usable.
+
+    ``sshtunnel`` (pinned <0.5) references ``paramiko.DSSKey`` while building its
+    key-type discovery tables, which every ``SSHTunnelForwarder`` construction
+    exercises via ``_consolidate_auth``. Importing ``superset.extensions.ssh``
+    installs a stub so this no longer raises ``AttributeError`` at runtime.
+    """
+    import superset.extensions.ssh  # noqa: F401
+
+    assert hasattr(paramiko, "DSSKey")
+
+    # get_keys() builds the {rsa, dsa, ecdsa, ed25519} table that references
+    # paramiko.DSSKey; it must not raise now that the stub is installed.
+    assert (
+        sshtunnel.SSHTunnelForwarder.get_keys(
+            allow_agent=False, host_pkey_directories=[]
+        )
+        == []
+    )
+
+    # A caller-supplied paramiko key is still accepted end to end.
+    pkey = paramiko.RSAKey.generate(2048)
+    password, loaded = sshtunnel.SSHTunnelForwarder._consolidate_auth(
+        ssh_pkey=pkey, allow_agent=False, host_pkey_directories=[]
+    )
+    assert loaded == [pkey]
+
+    # The DSA stub refuses to load key material rather than silently accepting it.
+    with pytest.raises(SSHException):
+        paramiko.DSSKey.from_private_key(StringIO("not-a-key"))

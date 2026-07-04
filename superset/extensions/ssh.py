@@ -47,6 +47,30 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
+# ``sshtunnel`` (pinned <0.5 and effectively unmaintained) still references
+# ``paramiko.DSSKey`` in its key-type discovery tables. paramiko 4.0 removed
+# ``DSSKey`` because DSA keys are insecure and no longer supported. Provide a
+# stub so ``sshtunnel`` can build those tables without raising ``AttributeError``
+# at tunnel-creation time; the stub refuses to load keys, mirroring paramiko's
+# removal of DSA support rather than silently accepting DSA material.
+if not hasattr(paramiko, "DSSKey"):
+
+    class _RemovedDSSKey(PKey):
+        """Placeholder for the DSA key type removed in paramiko 4.0."""
+
+        @classmethod
+        def from_private_key_file(
+            cls, *args: object, **kwargs: object
+        ) -> "_RemovedDSSKey":
+            raise SSHException("DSA keys are no longer supported by paramiko")
+
+        @classmethod
+        def from_private_key(cls, *args: object, **kwargs: object) -> "_RemovedDSSKey":
+            raise SSHException("DSA keys are no longer supported by paramiko")
+
+    paramiko.DSSKey = _RemovedDSSKey  # type: ignore[attr-defined]
+
 # Order matters: paramiko's per-class loaders raise SSHException with vague
 # "unpack requires 4 bytes" messages on type mismatches, so we try the more
 # modern key types first (ed25519, ECDSA) and fall back to RSA, which is the
