@@ -588,7 +588,7 @@ test('Theme base theme integration handles cssVar, hashed and inherit properties
     token: {
       colorPrimary: '#2893B3',
     },
-    cssVar: true,
+    cssVar: { key: 'test' },
     hashed: false,
   };
 
@@ -604,7 +604,7 @@ test('Theme base theme integration handles cssVar, hashed and inherit properties
 
   // User properties override/add to base
   expect(serialized.inherit).toBe(true);
-  expect(serialized.cssVar).toBe(true);
+  expect(serialized.cssVar).toEqual({ key: 'test' });
   expect(serialized.hashed).toBe(false);
 
   // Tokens are still merged

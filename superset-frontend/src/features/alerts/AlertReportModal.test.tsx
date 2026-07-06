@@ -694,7 +694,9 @@ test('open chart button opens explore with slice_id', async () => {
   });
   expect(openChartButton).toBeInTheDocument();
 
-  const navSpy = jest.spyOn(navigationUtils, 'navigateTo').mockImplementation(() => null);
+  const navSpy = jest
+    .spyOn(navigationUtils, 'navigateTo')
+    .mockImplementation(() => null);
   try {
     await userEvent.click(openChartButton);
     expect(navSpy).toHaveBeenCalledWith(
@@ -721,7 +723,9 @@ test('open dashboard button opens dashboard url', async () => {
   });
   expect(openDashButton).toBeInTheDocument();
 
-  const navSpy = jest.spyOn(navigationUtils, 'navigateTo').mockImplementation(() => null);
+  const navSpy = jest
+    .spyOn(navigationUtils, 'navigateTo')
+    .mockImplementation(() => null);
   try {
     await userEvent.click(openDashButton);
     expect(navSpy).toHaveBeenCalledWith(
@@ -1141,7 +1145,9 @@ test('dashboard switching resets tab and filter selections', async () => {
     filterSelects.forEach(select => {
       const container = select.closest('.ant-select');
       expect(
-        container?.querySelector('.ant-select-selection-item'),
+        container?.querySelector(
+          '.ant-select-content-has-value, .ant-select-selection-item',
+        ),
       ).not.toBeInTheDocument();
     });
   });
@@ -1649,7 +1655,9 @@ test('create mode defaults to dashboard content type with chart null', async () 
   // Default content type should be "Dashboard" (not "Chart")
   const selectedItem = contentTypeSelect
     .closest('.ant-select')
-    ?.querySelector('.ant-select-selection-item');
+    ?.querySelector(
+      '.ant-select-content-has-value, .ant-select-selection-item',
+    );
   expect(selectedItem).toBeInTheDocument();
   expect(selectedItem?.textContent).toBe('Dashboard');
 
@@ -1812,7 +1820,7 @@ test('filter reappears in dropdown after clearing with X icon', async () => {
 
   await waitFor(() => {
     const selectionItem = document.querySelector(
-      '.ant-select-selection-item[title="Test Filter 1"]',
+      '.ant-select-content-has-value[title="Test Filter 1"], .ant-select-selection-item[title="Test Filter 1"]',
     );
     expect(selectionItem).toBeInTheDocument();
   });
@@ -1834,7 +1842,7 @@ test('filter reappears in dropdown after clearing with X icon', async () => {
 
   await waitFor(() => {
     const selectionItem = document.querySelector(
-      '.ant-select-selection-item[title="Test Filter 1"]',
+      '.ant-select-content-has-value[title="Test Filter 1"], .ant-select-selection-item[title="Test Filter 1"]',
     );
     expect(selectionItem).not.toBeInTheDocument();
   });
@@ -2353,14 +2361,14 @@ test('edit mode shows friendly filter names instead of raw IDs', async () => {
 
   await waitFor(() => {
     const selectionItem = document.querySelector(
-      '.ant-select-selection-item[title="Country"]',
+      '.ant-select-content-has-value[title="Country"], .ant-select-selection-item[title="Country"]',
     );
     expect(selectionItem).toBeInTheDocument();
   });
 
   expect(
     document.querySelector(
-      '.ant-select-selection-item[title="NATIVE_FILTER-abc123"]',
+      '.ant-select-content-has-value[title="NATIVE_FILTER-abc123"], .ant-select-selection-item[title="NATIVE_FILTER-abc123"]',
     ),
   ).not.toBeInTheDocument();
 });
@@ -2380,7 +2388,7 @@ test('edit mode falls back to raw ID when filterName is missing', async () => {
 
   await waitFor(() => {
     const selectionItem = document.querySelector(
-      '.ant-select-selection-item[title="NATIVE_FILTER-xyz789"]',
+      '.ant-select-content-has-value[title="NATIVE_FILTER-xyz789"], .ant-select-selection-item[title="NATIVE_FILTER-xyz789"]',
     );
     expect(selectionItem).toBeInTheDocument();
   });
@@ -2488,7 +2496,7 @@ test('selecting filter triggers chart data request with correct params', async (
   // Select the Country Filter using comboboxSelect pattern
   await comboboxSelect(filterDropdown, 'Country Filter', () =>
     document.querySelector(
-      '.ant-select-selection-item[title="Country Filter"]',
+      '.ant-select-content-has-value[title="Country Filter"], .ant-select-selection-item[title="Country Filter"]',
     ),
   );
 
@@ -2539,7 +2547,7 @@ test('selected filter excluded from other row dropdowns', async () => {
   // Select Country Filter in row 1
   await comboboxSelect(filterDropdown, 'Country Filter', () =>
     document.querySelector(
-      '.ant-select-selection-item[title="Country Filter"]',
+      '.ant-select-content-has-value[title="Country Filter"], .ant-select-selection-item[title="Country Filter"]',
     ),
   );
 
