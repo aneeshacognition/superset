@@ -65,11 +65,48 @@ export default class FixJSDOMEnvironment extends JSDOMEnvironment {
     this.global.AbortController = AbortController;
     this.global.ReadableStream = ReadableStream;
 
-    // Mock MessageChannel to prevent hanging Jest tests with rc-overflow@1.4.1
-    // Forces rc-overflow to use requestAnimationFrame fallback instead
-    // Can be removed when rc-overflow properly cleans up MessagePorts in test environments
-    // See: https://github.com/apache/superset/pull/34871
-    this.global.MessageChannel = undefined as any;
-    this.global.MessagePort = undefined as any;
+    // jsdom does not implement MessageChannel. rc-select (antd v6) calls
+    // `new MessageChannel()` unconditionally to schedule the dropdown-close
+    // macrotask, so a working constructor is required. The real jsdom
+    // implementation (when available) leaks MessagePorts and hangs Jest
+    // (see https://github.com/apache/superset/pull/34871), so a lightweight
+    // timer-based mock is used instead: it dispatches messages to the paired
+    // port via a macrotask without holding the event loop open.
+    class MockMessagePort {
+      onmessage: ((event: { data: unknown }) => void) | null = null;
+
+      otherPort: MockMessagePort | null = null;
+
+      postMessage(data: unknown) {
+        const { otherPort } = this;
+        setTimeout(() => {
+          otherPort?.onmessage?.({ data });
+        }, 0);
+      }
+
+      start() {}
+
+      close() {}
+
+      addEventListener() {}
+
+      removeEventListener() {}
+    }
+
+    class MockMessageChannel {
+      port1: MockMessagePort;
+
+      port2: MockMessagePort;
+
+      constructor() {
+        this.port1 = new MockMessagePort();
+        this.port2 = new MockMessagePort();
+        this.port1.otherPort = this.port2;
+        this.port2.otherPort = this.port1;
+      }
+    }
+
+    this.global.MessageChannel = MockMessageChannel as any;
+    this.global.MessagePort = MockMessagePort as any;
   }
 }
