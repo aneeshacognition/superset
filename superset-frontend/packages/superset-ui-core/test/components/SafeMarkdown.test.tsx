@@ -144,23 +144,6 @@ describe('transformLinkUri', () => {
 
 describe('SafeMarkdown', () => {
   describe('remark-gfm compatibility tests', () => {
-    /**
-     * Critical regression test for remark-gfm v3.0.1 compatibility.
-     *
-     * CONTEXT:
-     * - remark-gfm v4+ requires unified v11 (react-markdown v9+, React 18+)
-     * - react-markdown v8 uses unified v10 (compatible with React 17)
-     * - Mixing remark-gfm v4 with react-markdown v8 causes:
-     *   "Cannot set properties of undefined (setting 'inTable')" error
-     *
-     * HISTORY:
-     * - PR #32420 (March 2025): Fixed by pinning remark-gfm to v3
-     * - PR #32945 (July 2025): Dependabot auto-upgraded to v4, breaking tables
-     * - This test prevents future auto-upgrades from breaking functionality
-     *
-     * This test will FAIL if remark-gfm is upgraded to v4+ without upgrading
-     * react-markdown to v9+ (which requires React 18).
-     */
     test('should render GitHub Flavored Markdown tables without errors', () => {
       const markdownWithTable = `
 | Header 1 | Header 2 | Header 3 |
@@ -169,19 +152,11 @@ describe('SafeMarkdown', () => {
 | Value A  | Value B  | Value C  |
       `.trim();
 
-      // This will throw "Cannot set properties of undefined (setting 'inTable')"
-      // if remark-gfm v4+ is used with react-markdown v8
       expect(() => {
         render(<SafeMarkdown source={markdownWithTable} />);
       }).not.toThrow();
     });
 
-    /**
-     * Regression test for issue #32416
-     *
-     * Tests that inline code blocks with backticks work correctly.
-     * This was the original issue that led to pinning remark-gfm to v3.
-     */
     test('should render inline code blocks with backticks', () => {
       const markdownWithCode = 'Use `console.log()` for debugging';
 
@@ -190,11 +165,6 @@ describe('SafeMarkdown', () => {
       }).not.toThrow();
     });
 
-    /**
-     * Additional GFM feature test: Strikethrough
-     *
-     * Ensures other remark-gfm features work correctly with v3.
-     */
     test('should render strikethrough text', () => {
       const markdownWithStrikethrough = '~~This is strikethrough text~~';
 
@@ -203,11 +173,6 @@ describe('SafeMarkdown', () => {
       }).not.toThrow();
     });
 
-    /**
-     * Additional GFM feature test: Task lists
-     *
-     * Ensures task lists render correctly with v3.
-     */
     test('should render task lists', () => {
       const markdownWithTaskList = `
 - [x] Completed task
@@ -219,11 +184,6 @@ describe('SafeMarkdown', () => {
       }).not.toThrow();
     });
 
-    /**
-     * Complex integration test with multiple GFM features
-     *
-     * Tests that all GFM features work together without conflicts.
-     */
     test('should render complex markdown with multiple GFM features', () => {
       const complexMarkdown = `
 # Dashboard Overview
@@ -240,8 +200,6 @@ Use \`console.log()\` for debugging ~~or use alerts~~.
 - [ ] Add filters
       `.trim();
 
-      // If remark-gfm v4 is used with react-markdown v8, this will throw
-      // "Cannot set properties of undefined (setting 'inTable')"
       expect(() => {
         render(<SafeMarkdown source={complexMarkdown} />);
       }).not.toThrow();
