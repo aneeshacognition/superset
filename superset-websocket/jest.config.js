@@ -19,4 +19,9 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  transform: {
+    '^.+\\.[tj]s$': 'ts-jest',
+  },
+  // `cookie` ships as ESM only, so it must be transformed rather than ignored.
+  transformIgnorePatterns: ['/node_modules/(?!cookie/)'],
 };
