@@ -239,9 +239,9 @@ class EncryptedFieldTest(SupersetTestCase):
         assert conn.execute.call_count == 1
         stmt = str(conn.execute.call_args.args[0])
         assert "WHERE uuid = :_pk_uuid" in stmt
-        kwargs = conn.execute.call_args.kwargs
-        assert kwargs["_pk_uuid"] == row["uuid"]
-        assert "configuration" in kwargs
+        params = conn.execute.call_args.args[1]
+        assert params["_pk_uuid"] == row["uuid"]
+        assert "configuration" in params
         assert stats == ReEncryptStats(re_encrypted=1, skipped=0, failed=0)
 
     def test_re_encrypt_row_is_idempotent(self):

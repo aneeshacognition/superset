@@ -173,7 +173,6 @@ class TestDatabaseModel(SupersetTestCase):
             "'{{ 'xyz_' + time_grain }}' as time_grain",
             database=get_example_database(),
         )
-        db.session.add(table)
         TableColumn(
             column_name="expr",
             expression="case when '{{ current_username() }}' = 'abc' "
@@ -186,6 +185,7 @@ class TestDatabaseModel(SupersetTestCase):
             expression="count('{{ 'bar_' + time_grain }}')",
             table=table,
         )
+        db.session.add(table)
         db.session.commit()
 
         sqla_query = table.get_sqla_query(**base_query_obj)

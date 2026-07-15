@@ -84,6 +84,7 @@ class TestReportSchedulesApi(SupersetTestCase):
             security_manager.add_permission_role(reports_role, read_perm)
             security_manager.add_permission_role(reports_role, write_perm)
             user.roles.append(reports_role)
+            db.session.commit()
 
             yield user
 
@@ -119,6 +120,7 @@ class TestReportSchedulesApi(SupersetTestCase):
     @pytest.fixture
     def create_working_gamma_report_schedule(self, gamma_user_with_alerts_role):
         with self.create_app().app_context():
+            gamma_user = self.get_user(REPORTS_GAMMA_USER)
             chart = db.session.query(Slice).first()
             example_db = get_example_database()
 
@@ -130,7 +132,7 @@ class TestReportSchedulesApi(SupersetTestCase):
                 description="Report working",
                 chart=chart,
                 database=example_db,
-                owners=[gamma_user_with_alerts_role],
+                owners=[gamma_user],
                 last_state=ReportState.WORKING,
             )
 
@@ -144,6 +146,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         with self.create_app().app_context():
             admin_user = self.get_user("admin")
             alpha_user = self.get_user("alpha")
+            gamma_user = self.get_user(REPORTS_GAMMA_USER)
             chart = db.session.query(Slice).first()
             example_db = get_example_database()
 
@@ -155,7 +158,7 @@ class TestReportSchedulesApi(SupersetTestCase):
                 description="Report working",
                 chart=chart,
                 database=example_db,
-                owners=[admin_user, alpha_user, gamma_user_with_alerts_role],
+                owners=[admin_user, alpha_user, gamma_user],
                 last_state=ReportState.WORKING,
             )
 
