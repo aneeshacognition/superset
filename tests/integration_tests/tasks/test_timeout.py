@@ -154,6 +154,7 @@ class TestTimeoutHandling(SupersetTestCase):
             scope=TaskScope.SYSTEM,
             properties={"timeout": 1},  # 1 second timeout
         )
+        db.session.commit()
 
         # Execute task via Celery executor (synchronously)
         # Use str(uuid) since Celery serializes args as JSON strings
@@ -177,6 +178,7 @@ class TestTimeoutHandling(SupersetTestCase):
             task_name="Test Abort Task",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         # Cancel before execution (pending task abort)
         CancelTaskCommand(task_obj.uuid, force=True).run()
@@ -195,6 +197,7 @@ class TestTimeoutHandling(SupersetTestCase):
             scope=TaskScope.SYSTEM,
             # No timeout property
         )
+        db.session.commit()
 
         # Use str(uuid) since Celery serializes args as JSON strings
         result = execute_task.apply(
@@ -215,6 +218,7 @@ class TestTimeoutHandling(SupersetTestCase):
             scope=TaskScope.SYSTEM,
             properties={"timeout": 1},  # 1 second timeout
         )
+        db.session.commit()
 
         # Use str(uuid) since Celery serializes args as JSON strings
         result = execute_task.apply(

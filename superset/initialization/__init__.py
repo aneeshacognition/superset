@@ -1049,7 +1049,31 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
     def configure_db_encrypt(self) -> None:
         encrypted_field_factory.init_app(self.superset_app)
 
+    def _apply_sqlite_pool_default(self) -> None:
+        # SQLAlchemy 2.0 changed the default connection pool for file-based
+        # SQLite from NullPool to QueuePool. QueuePool shares connections across
+        # threads, which breaks metadata writes issued from background threads
+        # when ``check_same_thread`` is enabled and increases "database is
+        # locked" contention. Fall back to NullPool for SQLite unless the
+        # operator has chosen an explicit pool.
+        from sqlalchemy.pool import NullPool
+
+        eng_options = self.config.get("SQLALCHEMY_ENGINE_OPTIONS") or {}
+        if "poolclass" in eng_options or "creator" in eng_options:
+            return
+        url = make_url_safe(self.database_uri)
+        if url.get_backend_name() != "sqlite":
+            return
+        # In-memory SQLite relies on a shared single connection (StaticPool).
+        if not url.database or url.database == ":memory:":
+            return
+        self.superset_app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+            **eng_options,
+            "poolclass": NullPool,
+        }
+
     def setup_db(self) -> None:
+        self._apply_sqlite_pool_default()
         db.init_app(self.superset_app)
 
         with self.superset_app.app_context():

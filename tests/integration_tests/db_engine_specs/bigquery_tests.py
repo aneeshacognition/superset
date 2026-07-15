@@ -315,16 +315,17 @@ class TestBigQueryDbEngineSpec(SupersetTestCase):
     @pytest.mark.usefixtures("load_birth_names_dashboard_with_slices")
     def test_calculated_column_in_order_by(self):
         table = self.get_table(name="birth_names")
-        TableColumn(
-            column_name="gender_cc",
-            type="VARCHAR(255)",
-            table=table,
-            expression="""
+        table.columns.append(
+            TableColumn(
+                column_name="gender_cc",
+                type="VARCHAR(255)",
+                expression="""
             case
               when gender='boy' then 'male'
               else 'female'
             end
             """,
+            )
         )
 
         table.database.sqlalchemy_uri = "bigquery://"

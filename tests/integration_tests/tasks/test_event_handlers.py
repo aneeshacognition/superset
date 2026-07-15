@@ -160,6 +160,7 @@ class TestCleanupHandlers(SupersetTestCase):
             task_name="Test Cleanup",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         # Execute task synchronously through Celery executor
         # Use str(uuid) since Celery serializes args as JSON strings
@@ -182,6 +183,7 @@ class TestCleanupHandlers(SupersetTestCase):
             task_name="Test Multiple Cleanup",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         result = execute_task.apply(
             args=[str(task_obj.uuid), "test_multiple_cleanup_task", (), {}]
@@ -200,6 +202,7 @@ class TestCleanupHandlers(SupersetTestCase):
             task_name="Test Cleanup Data",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         result = execute_task.apply(
             args=[str(task_obj.uuid), "test_cleanup_with_data", (), {}]
@@ -230,6 +233,7 @@ class TestAbortHandlers(SupersetTestCase):
             task_name="Test Abort",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         # Manually set to IN_PROGRESS and then ABORTING to simulate abort
         task_obj.status = TaskStatus.IN_PROGRESS.value
@@ -267,6 +271,7 @@ class TestAbortHandlers(SupersetTestCase):
             task_name="Test Both Handlers",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         task_obj.status = TaskStatus.IN_PROGRESS.value
         task_obj.update_properties({"is_abortable": True})
@@ -307,6 +312,7 @@ class TestAbortHandlers(SupersetTestCase):
             task_name="Test No Abort on Success",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         task_obj.status = TaskStatus.SUCCESS.value
         db.session.merge(task_obj)
@@ -349,6 +355,7 @@ class TestTaskContextMethods(SupersetTestCase):
             task_name="Test Abortable",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         assert task_obj.properties_dict.get("is_abortable") is not True
 
@@ -380,6 +387,7 @@ class TestAbortBeforeExecution(SupersetTestCase):
             task_name="Test Before Start",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         # Cancel immediately (task is still PENDING)
         CancelTaskCommand(task_obj.uuid, force=True).run()
@@ -396,6 +404,7 @@ class TestAbortBeforeExecution(SupersetTestCase):
             task_name="Test Skip Aborted",
             scope=TaskScope.SYSTEM,
         )
+        db.session.commit()
 
         # Abort the task before execution
         task_obj.status = TaskStatus.ABORTED.value
