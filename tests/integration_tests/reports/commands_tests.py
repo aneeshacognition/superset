@@ -23,7 +23,6 @@ from uuid import uuid4
 import pytest
 from flask.ctx import AppContext
 from flask_appbuilder.security.sqla.models import User
-from flask_sqlalchemy import BaseQuery
 from freezegun import freeze_time
 from slack_sdk.errors import (
     BotUserAccessError,
@@ -36,6 +35,13 @@ from slack_sdk.errors import (
     SlackTokenRotationError,
 )
 from sqlalchemy.sql import func, text
+
+try:
+    # Flask-SQLAlchemy 3.x (required by SQLAlchemy 2.0)
+    from flask_sqlalchemy.query import Query as BaseQuery
+except ImportError:  # pragma: no cover
+    # Flask-SQLAlchemy 2.x
+    from flask_sqlalchemy import BaseQuery
 
 from superset import db
 from superset.commands.report.exceptions import (
@@ -171,18 +177,22 @@ def assert_log(state: str, error_message: Optional[str] = None):
 @contextmanager
 def create_test_table_context(database: Database):
     with database.get_sqla_engine() as engine:
-        engine.execute(
-            text("""
-            CREATE TABLE IF NOT EXISTS test_table AS
-            SELECT 1 as first, 2 as second
-            """)
-        )
-        engine.execute(text("INSERT INTO test_table (first, second) VALUES (1, 2)"))
-        engine.execute(text("INSERT INTO test_table (first, second) VALUES (3, 4)"))
+        with engine.connect() as conn:
+            conn.execute(
+                text("""
+                CREATE TABLE IF NOT EXISTS test_table AS
+                SELECT 1 as first, 2 as second
+                """)
+            )
+            conn.execute(text("INSERT INTO test_table (first, second) VALUES (1, 2)"))
+            conn.execute(text("INSERT INTO test_table (first, second) VALUES (3, 4)"))
+            conn.commit()
 
     yield db.session
     with database.get_sqla_engine() as engine:
-        engine.execute(text("DROP TABLE test_table"))
+        with engine.connect() as conn:
+            conn.execute(text("DROP TABLE test_table"))
+            conn.commit()
 
 
 @pytest.fixture

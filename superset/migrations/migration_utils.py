@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import sqlalchemy as sa
 from alembic.operations import Operations
-from sqlalchemy.engine.reflection import Inspector
 
 naming_convention = {
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
@@ -29,7 +29,7 @@ def create_unique_constraint(
 ) -> None:
     # Get the database connection and inspector
     bind = op.get_bind()
-    inspector = Inspector.from_engine(bind)
+    inspector = sa.inspect(bind)
 
     # Check if the unique constraint already exists
     existing_constraints = inspector.get_unique_constraints(table_name)

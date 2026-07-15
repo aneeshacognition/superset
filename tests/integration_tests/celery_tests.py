@@ -121,7 +121,9 @@ def drop_table_if_exists(table_name: str, table_type: CTASMethod) -> None:
     sql = f"DROP {table_type.name} IF EXISTS {table_name}"
     database = get_example_database()
     with database.get_sqla_engine() as engine:
-        engine.execute(text(sql))
+        with engine.connect() as conn:
+            conn.execute(text(sql))
+            conn.commit()
 
 
 def quote_f(value: Optional[str]):
@@ -532,7 +534,9 @@ def test_teardown_with_app_context():
 
 
 def delete_tmp_view_or_table(name: str, ctas_method: CTASMethod):
-    db.get_engine().execute(text(f"DROP {ctas_method.name} IF EXISTS {name}"))
+    with db.get_engine().connect() as conn:
+        conn.execute(text(f"DROP {ctas_method.name} IF EXISTS {name}"))
+        conn.commit()
 
 
 def wait_for_success(result):

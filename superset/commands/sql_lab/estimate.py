@@ -21,6 +21,7 @@ from typing import Any, TypedDict
 
 from flask import current_app as app
 from flask_babel import gettext as __
+from sqlalchemy.orm import make_transient
 
 from superset import db, is_feature_enabled, security_manager
 from superset.commands.base import BaseCommand
@@ -128,10 +129,11 @@ class QueryEstimationCommand(BaseCommand):
             # Build a transient (unsaved) Query so the engine spec can resolve the
             # effective per-query schema exactly as the executor does. Mirror the
             # probe built in ``SupersetSecurityManager.raise_for_access``: set a
-            # ``client_id`` (the column is ``nullable=False``) and expunge it, so
-            # the ``database`` backref's ``cascade="all, delete-orphan"`` cannot
-            # autoflush this incomplete row into the session when ``apply_rls``
-            # issues its own ``db.session`` query below.
+            # ``client_id`` (the column is ``nullable=False``) and detach it via
+            # ``make_transient``, so the ``database`` backref's
+            # ``cascade="all, delete-orphan"`` cannot autoflush this incomplete
+            # row into the session when ``apply_rls`` issues its own
+            # ``db.session`` query below.
             probe_query = Query(
                 database=self._database,
                 sql=self._sql,
@@ -140,7 +142,7 @@ class QueryEstimationCommand(BaseCommand):
                 client_id=utils.shortid()[:10],
                 user_id=utils.get_user_id(),
             )
-            db.session.expunge(probe_query)
+            make_transient(probe_query)
             # Always resolve through ``get_default_schema_for_query`` — even when
             # the caller pinned a schema — so the engine's per-query security gate
             # runs (e.g. ``PostgresEngineSpec`` rejects a query that sets

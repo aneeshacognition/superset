@@ -51,11 +51,9 @@ from superset.exceptions import SupersetTemplateException
 from superset.models.sql_lab import Query
 from superset.models.sql_types.presto_sql_types import (
     Array,
-    Date,
     Interval,
     Map,
     Row,
-    TimeStamp,
     TinyInteger,
 )
 from superset.result_set import destringify
@@ -326,7 +324,8 @@ class PrestoBaseEngineSpec(BaseEngineSpec, metaclass=ABCMeta):
         """
         Get all catalogs.
         """
-        return {catalog for (catalog,) in inspector.bind.execute(text("SHOW CATALOGS"))}
+        with inspector.bind.connect() as conn:
+            return {catalog for (catalog,) in conn.execute(text("SHOW CATALOGS"))}
 
     @classmethod
     def adjust_engine_params(
@@ -558,11 +557,15 @@ class PrestoBaseEngineSpec(BaseEngineSpec, metaclass=ABCMeta):
                 col_type = col_type_class() if col_type_class else None
 
             if isinstance(col_type, types.DATE):
-                col_type = Date()
+                query = query.where(
+                    Column(col_name) == literal_column(f"DATE '{value}'")
+                )
             elif isinstance(col_type, types.TIMESTAMP):
-                col_type = TimeStamp()
-
-            query = query.where(Column(col_name, col_type) == value)
+                query = query.where(
+                    Column(col_name) == literal_column(f"TIMESTAMP '{value}'")
+                )
+            else:
+                query = query.where(Column(col_name, col_type) == value)
 
         return query
 
@@ -712,9 +715,8 @@ class PrestoBaseEngineSpec(BaseEngineSpec, metaclass=ABCMeta):
         :return: list of column objects
         """
         full_table_name = cls.quote_table(table, inspector.engine.dialect)
-        return inspector.bind.execute(
-            text(f"SHOW COLUMNS FROM {full_table_name}")
-        ).fetchall()
+        with inspector.bind.connect() as conn:
+            return conn.execute(text(f"SHOW COLUMNS FROM {full_table_name}")).fetchall()
 
     @classmethod
     def _create_column_info(

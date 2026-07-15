@@ -217,6 +217,7 @@ def test_apply_sql_security_allows_benign_select(mock_app: MagicMock) -> None:
     assert command._apply_sql_security("SELECT 1") == "SELECT 1"
 
 
+@patch("superset.commands.sql_lab.estimate.make_transient")
 @patch("superset.commands.sql_lab.estimate.apply_rls")
 @patch("superset.commands.sql_lab.estimate.Query")
 @patch("superset.commands.sql_lab.estimate.db")
@@ -228,6 +229,7 @@ def test_apply_sql_security_injects_rls_when_enabled(
     mock_db: MagicMock,
     mock_query: MagicMock,
     mock_apply_rls: MagicMock,
+    mock_make_transient: MagicMock,
 ) -> None:
     """With RLS_IN_SQLLAB enabled, RLS predicates are applied per statement so
     the estimate reflects the constrained query the user could actually run."""
@@ -238,9 +240,11 @@ def test_apply_sql_security_injects_rls_when_enabled(
 
     mock_is_feature_enabled.assert_called_with("RLS_IN_SQLLAB")
     mock_apply_rls.assert_called_once()
-    # The transient probe Query is expunged so its (deliberately incomplete)
-    # row can't autoflush into the session when apply_rls queries below.
-    mock_db.session.expunge.assert_called_once_with(mock_query.return_value)
+    # The probe Query is detached via make_transient so its (deliberately
+    # incomplete) row can't autoflush into the session when apply_rls queries
+    # below. Under SQLAlchemy 2.0 assigning ``database=`` no longer cascades the
+    # instance into the session, so ``session.expunge`` would raise.
+    mock_make_transient.assert_called_once_with(mock_query.return_value)
     assert isinstance(result, str)
 
 

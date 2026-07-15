@@ -370,16 +370,23 @@ def generate_dashboard(  # noqa: C901
         # return a minimal response using only scalar attributes that are
         # already loaded — relationship fields (tags, slices) would
         # trigger lazy-loading on the same dead session.
+        from sqlalchemy.exc import ArgumentError
+
         from superset.daos.dashboard import DashboardDAO
+
+        try:
+            query_options: list[Any] = [
+                subqueryload(Dashboard.slices).subqueryload(Slice.tags),
+                subqueryload(Dashboard.tags),
+            ]
+        except ArgumentError:
+            query_options = []
 
         try:
             dashboard = (
                 DashboardDAO.find_by_id(
                     dashboard.id,
-                    query_options=[
-                        subqueryload(Dashboard.slices).subqueryload(Slice.tags),
-                        subqueryload(Dashboard.tags),
-                    ],
+                    query_options=query_options,
                 )
                 or dashboard
             )

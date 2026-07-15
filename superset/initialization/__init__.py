@@ -22,6 +22,7 @@ import os
 import sys
 from typing import Any, Callable, TYPE_CHECKING
 
+import sqlalchemy as sa
 import wtforms_json
 from colorama import Fore, Style
 from deprecation import deprecated
@@ -35,7 +36,6 @@ from flask_appbuilder.utils.base import get_safe_redirect
 from flask_babel import lazy_gettext as _, refresh
 from flask_compress import Compress
 from flask_session import Session
-from sqlalchemy import text
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from superset.commands.database.exceptions import DatabaseInvalidError
@@ -71,7 +71,6 @@ from superset.semantic_layers.labels import database_connections_menu_label
 from superset.sql.parse import SQLGLOT_DIALECTS
 from superset.superset_typing import FlaskResponse
 from superset.utils.core import is_test, pessimistic_connection_handling
-from superset.utils.decorators import transaction
 from superset.utils.log import DBEventLogger, get_event_logger_from_cfg_value
 
 if TYPE_CHECKING:
@@ -815,7 +814,8 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         try:
             with self.superset_app.app_context():
                 # Simple connection test
-                db.engine.execute(text("SELECT 1"))
+                with db.engine.connect() as connection:
+                    connection.execute(sa.text("SELECT 1"))
         except Exception:
             db_uri = self.database_uri
 
@@ -938,7 +938,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
 
         SQLGLOT_DIALECTS.update(extensions)
 
-    @transaction()
     def configure_fab(self) -> None:
         if self.config["SILENCE_FAB"]:
             logging.getLogger("flask_appbuilder").setLevel(logging.ERROR)
@@ -1050,7 +1049,31 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
     def configure_db_encrypt(self) -> None:
         encrypted_field_factory.init_app(self.superset_app)
 
+    def _apply_sqlite_pool_default(self) -> None:
+        # SQLAlchemy 2.0 changed the default connection pool for file-based
+        # SQLite from NullPool to QueuePool. QueuePool shares connections across
+        # threads, which breaks metadata writes issued from background threads
+        # when ``check_same_thread`` is enabled and increases "database is
+        # locked" contention. Fall back to NullPool for SQLite unless the
+        # operator has chosen an explicit pool.
+        from sqlalchemy.pool import NullPool
+
+        eng_options = self.config.get("SQLALCHEMY_ENGINE_OPTIONS") or {}
+        if "poolclass" in eng_options or "creator" in eng_options:
+            return
+        url = make_url_safe(self.database_uri)
+        if url.get_backend_name() != "sqlite":
+            return
+        # In-memory SQLite relies on a shared single connection (StaticPool).
+        if not url.database or url.database == ":memory:":
+            return
+        self.superset_app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+            **eng_options,
+            "poolclass": NullPool,
+        }
+
     def setup_db(self) -> None:
+        self._apply_sqlite_pool_default()
         db.init_app(self.superset_app)
 
         with self.superset_app.app_context():

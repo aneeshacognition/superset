@@ -18,12 +18,41 @@ import logging
 import time
 from logging.config import fileConfig
 
+import sqlalchemy.ext.declarative
+import sqlalchemy.orm
 from alembic import context
 from alembic.operations.ops import MigrationScript
 from alembic.runtime.migration import MigrationContext
 from flask import current_app
 from flask_appbuilder import Model
 from sqlalchemy import engine_from_config, pool
+from sqlalchemy.ext.declarative import declarative_base as _original_declarative_base
+from sqlalchemy.orm import declarative_base as _original_orm_declarative_base
+
+
+def _patched_declarative_base(**kwargs):  # type: ignore
+    """Wrap declarative_base to set __allow_unmapped__ = True on the base.
+
+    SQLAlchemy 2.0 requires Mapped[] annotations for all ORM-mapped attributes.
+    Legacy migration files use bare type annotations that trigger
+    MappedAnnotationError. Setting __allow_unmapped__ preserves 1.x behavior.
+    """
+    base = _original_declarative_base(**kwargs)
+    base.__allow_unmapped__ = True
+    return base
+
+
+def _patched_orm_declarative_base(**kwargs):  # type: ignore
+    base = _original_orm_declarative_base(**kwargs)
+    base.__allow_unmapped__ = True
+    return base
+
+
+sqlalchemy.ext.declarative.declarative_base = _patched_declarative_base
+sqlalchemy.orm.declarative_base = _patched_orm_declarative_base
+
+# Allow FAB Model base to skip SA 2.0 annotation validation
+Model.__allow_unmapped__ = True
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

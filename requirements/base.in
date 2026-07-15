@@ -63,3 +63,7 @@ setuptools<81
 # explicitly in pyproject.toml and pin google-auth to the post-drop range so
 # the install path is internally consistent (#40962).
 google-auth>=2.53.0,<3.0.0
+
+# Flask-SQLAlchemy 2.x is incompatible with SQLAlchemy 2.0 at runtime
+# (sqlalchemy.__all__ was removed in SA 2.0).
+flask-sqlalchemy>=3.0.0,<4.0.0

@@ -18,8 +18,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.engine.reflection import Inspector
 
 from superset.utils.core import generic_find_fk_constraint_name
 
@@ -51,7 +51,7 @@ def redefine(
     """
 
     bind = op.get_bind()
-    insp = Inspector.from_engine(bind)
+    insp = sa.inspect(bind)
     conv = {"fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s"}
 
     with op.batch_alter_table(foreign_key.table, naming_convention=conv) as batch_op:

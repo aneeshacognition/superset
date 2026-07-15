@@ -31,7 +31,7 @@ from flask_appbuilder import Model
 from flask_babel import lazy_gettext as _
 from sqlalchemy import Column, ForeignKey, Integer, String, Text
 from sqlalchemy.engine.base import Connection
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.orm.mapper import Mapper
 from sqlalchemy_utils import UUIDType
 from sqlalchemy_utils.types.json import JSONType
@@ -130,7 +130,7 @@ class SemanticLayer(AuditMixinNullable, Model):
     perm = Column(String(1000), nullable=True)
 
     # Semantic views relationship
-    semantic_views: list[SemanticView] = relationship(
+    semantic_views: Mapped[list[SemanticView]] = relationship(
         "SemanticView",
         back_populates="semantic_layer",
         cascade="all, delete-orphan",
@@ -221,7 +221,7 @@ class SemanticView(AuditMixinNullable, Model):
         ForeignKey("semantic_layers.uuid", ondelete="CASCADE"),
         nullable=False,
     )
-    semantic_layer: SemanticLayer = relationship(
+    semantic_layer: Mapped[SemanticLayer] = relationship(
         "SemanticLayer",
         back_populates="semantic_views",
         foreign_keys=[semantic_layer_uuid],

@@ -51,7 +51,7 @@ class AuditMixinNullable(AuditMixin):
     )
 
     @declared_attr
-    def created_by_fk(self) -> Column:
+    def created_by_fk(self):  # noqa: N805
         return Column(
             Integer,
             ForeignKey("ab_user.id"),
@@ -60,7 +60,7 @@ class AuditMixinNullable(AuditMixin):
         )
 
     @declared_attr
-    def changed_by_fk(self) -> Column:
+    def changed_by_fk(self):  # noqa: N805
         return Column(
             Integer,
             ForeignKey("ab_user.id"),

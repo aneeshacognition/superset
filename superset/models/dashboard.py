@@ -224,7 +224,7 @@ class Dashboard(CoreDashboard, AuditMixinNullable, ImportExportMixin):
         # self.url embeds the user-controlled slug; escape it before it is
         # marked safe via Markup (mirrors SqlaTable.link).
         url = escape(self.url)
-        return Markup(f'<a href="{url}">{title}</a>')
+        return Markup('<a href="{url}">{title}</a>').format(url=url, title=title)
 
     @property
     def digest(self) -> str | None:

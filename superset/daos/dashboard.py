@@ -377,6 +377,10 @@ class DashboardDAO(BaseDAO[Dashboard]):
         dash.owners = [g.user] if g.user else []
         dash.dashboard_title = data["dashboard_title"]
         dash.css = data.get("css")
+        dash.params = original_dash.params
+
+        db.session.add(dash)
+        db.session.flush()
 
         metadata = json.loads(data["json_metadata"])
         old_to_new_slice_ids: dict[int, int] = {}
@@ -399,9 +403,7 @@ class DashboardDAO(BaseDAO[Dashboard]):
         else:
             dash.slices = original_dash.slices
 
-        dash.params = original_dash.params
         cls.set_dash_metadata(dash, metadata, old_to_new_slice_ids)
-        db.session.add(dash)
         return dash
 
     @classmethod

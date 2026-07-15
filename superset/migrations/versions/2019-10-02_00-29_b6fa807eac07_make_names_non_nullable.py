@@ -39,7 +39,7 @@ conv = {
 
 def upgrade():
     bind = op.get_bind()
-    insp = sa.engine.reflection.Inspector.from_engine(bind)
+    insp = sa.inspect(bind)
 
     # First, drop the foreign key constraint prior to altering columns.
     fk_datasources_cluster_name_clusters = (
@@ -83,7 +83,7 @@ def upgrade():
 
 def downgrade():
     bind = op.get_bind()
-    insp = sa.engine.reflection.Inspector.from_engine(bind)
+    insp = sa.inspect(bind)
 
     # First, drop the foreign key constraint prior to altering columns.
     fk_datasources_cluster_name_clusters = (

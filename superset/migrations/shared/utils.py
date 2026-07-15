@@ -36,7 +36,6 @@ from sqlalchemy import (
 from sqlalchemy.dialects.mysql.base import MySQLDialect
 from sqlalchemy.dialects.postgresql.base import PGDialect
 from sqlalchemy.dialects.sqlite.base import SQLiteDialect  # noqa: E402
-from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.exc import NoSuchTableError
 from sqlalchemy.orm import Query, Session
 from sqlalchemy.sql.schema import SchemaItem
@@ -209,7 +208,7 @@ def get_foreign_key_names(table_name: str) -> set[str]:
     :returns: A set of foreign key constraint names
     """
     connection = op.get_bind()
-    inspector = Inspector.from_engine(connection)
+    inspector = inspect(connection)
     return {fk["name"] for fk in inspector.get_foreign_keys(table_name)}
 
 
