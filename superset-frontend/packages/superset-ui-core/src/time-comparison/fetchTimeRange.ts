@@ -104,9 +104,14 @@ export const fetchTimeRange = async (
         ),
     };
   } catch (response) {
-    const clientError = await getClientErrorObject(response);
+    const clientError = await getClientErrorObject(
+      response as Parameters<typeof getClientErrorObject>[0],
+    );
     return {
-      error: clientError.message || clientError.error || response.statusText,
+      error:
+        clientError.message ||
+        clientError.error ||
+        (response as Response).statusText,
     };
   }
 };

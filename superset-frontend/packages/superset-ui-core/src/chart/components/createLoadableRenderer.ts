@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 
 export type LoadableRendererProps = {
   onRenderFailure?: (error: Error) => void;
@@ -34,7 +34,7 @@ export interface LoadingProps {
 
 export interface LoadableOptions<Props, Exports> {
   loader: LoaderMap<Exports>;
-  loading: (loadingProps: LoadingProps) => ReactElement | null;
+  loading: (loadingProps: LoadingProps) => ReactNode;
   render: (loaded: Exports, props: Props) => ReactElement;
 }
 

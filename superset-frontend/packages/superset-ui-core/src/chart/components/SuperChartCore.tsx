@@ -45,7 +45,7 @@ function IDENTITY<T>(x: T) {
 const EMPTY = () => null;
 
 interface LoadingProps {
-  error: { toString(): string };
+  error?: { toString(): string };
 }
 
 interface LoadedModules {
