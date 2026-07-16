@@ -167,7 +167,7 @@ import {
   ApiOutlined,
 } from '@ant-design/icons';
 import { ForwardRefExoticComponent, RefAttributes, forwardRef } from 'react';
-import { IconType } from './types';
+import { AntdIconType, IconType } from './types';
 import { BaseIconComponent } from './BaseIcon';
 
 // partial name matches work too
@@ -334,7 +334,7 @@ export const antdEnhancedIcons: Record<
         (props, ref) => (
           <BaseIconComponent
             ref={ref}
-            component={AntdIcons[key as AntdIconNames]}
+            component={AntdIcons[key as AntdIconNames] as AntdIconType}
             fileName={key}
             {...props}
           />

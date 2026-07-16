@@ -50,82 +50,83 @@ export interface ModalTriggerRef {
   };
 }
 
-export const ModalTrigger = forwardRef(
-  (props: ModalTriggerProps, ref: ModalTriggerRef | null) => {
-    const [showModal, setShowModal] = useState(false);
-    const {
-      beforeOpen = () => {},
-      onExit = () => {},
-      isButton = false,
-      resizable = false,
-      draggable = false,
-      className = '',
-      tooltip,
-      modalFooter,
-      triggerNode,
-      destroyOnHidden = true,
-      modalBody,
-      draggableConfig = {},
-      resizableConfig = {},
-      modalTitle,
-      responsive,
-      width,
-      maxWidth,
-    } = props;
+export const ModalTrigger = forwardRef<
+  ModalTriggerRef['current'],
+  ModalTriggerProps
+>((props: ModalTriggerProps, ref) => {
+  const [showModal, setShowModal] = useState(false);
+  const {
+    beforeOpen = () => {},
+    onExit = () => {},
+    isButton = false,
+    resizable = false,
+    draggable = false,
+    className = '',
+    tooltip,
+    modalFooter,
+    triggerNode,
+    destroyOnHidden = true,
+    modalBody,
+    draggableConfig = {},
+    resizableConfig = {},
+    modalTitle,
+    responsive,
+    width,
+    maxWidth,
+  } = props;
 
-    const close = () => {
-      setShowModal(false);
-      onExit?.();
-    };
+  const close = () => {
+    setShowModal(false);
+    onExit?.();
+  };
 
-    const open = (e: MouseEvent) => {
-      e.preventDefault();
-      beforeOpen?.();
-      setShowModal(true);
-    };
+  const open = (e: MouseEvent) => {
+    e.preventDefault();
+    beforeOpen?.();
+    setShowModal(true);
+  };
 
-    if (ref) {
-      ref.current = { close, open, showModal }; // eslint-disable-line
-    }
+  if (ref && typeof ref === 'object') {
+    ref.current = { close, open, showModal }; // eslint-disable-line
+  }
 
-    /* eslint-disable jsx-a11y/interactive-supports-focus */
-    return (
-      <>
-        {isButton && (
-          <Button
-            className="modal-trigger"
-            data-test="btn-modal-trigger"
-            tooltip={tooltip}
-            onClick={open}
-          >
-            {triggerNode}
-          </Button>
-        )}
-        {!isButton && (
-          <div data-test="span-modal-trigger" onClick={open} role="button">
-            {triggerNode}
-          </div>
-        )}
-        <Modal
-          className={className}
-          show={showModal}
-          onHide={close}
-          name={modalTitle}
-          title={modalTitle}
-          footer={modalFooter}
-          hideFooter={!modalFooter}
-          width={width}
-          maxWidth={maxWidth}
-          responsive={responsive}
-          resizable={resizable}
-          resizableConfig={resizableConfig}
-          draggable={draggable}
-          draggableConfig={draggableConfig}
-          destroyOnHidden={destroyOnHidden}
+  /* eslint-disable jsx-a11y/interactive-supports-focus */
+  return (
+    <>
+      {isButton && (
+        <Button
+          className="modal-trigger"
+          data-test="btn-modal-trigger"
+          tooltip={tooltip}
+          onClick={open}
         >
-          {modalBody}
-        </Modal>
-      </>
-    );
-  },
-);
+          {triggerNode}
+        </Button>
+      )}
+      {!isButton && (
+        <div data-test="span-modal-trigger" onClick={open} role="button">
+          {triggerNode}
+        </div>
+      )}
+      <Modal
+        className={className}
+        show={showModal}
+        onHide={close}
+        name={modalTitle}
+        title={modalTitle}
+        footer={modalFooter}
+        hideFooter={!modalFooter}
+        width={width}
+        maxWidth={maxWidth}
+        responsive={responsive}
+        resizable={resizable}
+        resizableConfig={resizableConfig}
+        draggable={draggable}
+        draggableConfig={draggableConfig}
+        destroyOnHidden={destroyOnHidden}
+      >
+        {modalBody}
+      </Modal>
+    </>
+  );
+});

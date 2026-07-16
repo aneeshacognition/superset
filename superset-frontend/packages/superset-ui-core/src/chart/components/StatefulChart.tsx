@@ -27,6 +27,7 @@ import {
   buildQueryContext,
   RequestConfig,
   getClientErrorObject,
+  HandlerFunction,
 } from '../..';
 import { Loading } from '../../components/Loading';
 import ChartClient from '../clients/ChartClient';
@@ -482,7 +483,7 @@ export default function StatefulChart(props: StatefulChartProps) {
         enableNoResults={enableNoResults}
         noResults={NoDataComponent && <NoDataComponent />}
         onRenderSuccess={onRenderSuccess}
-        onRenderFailure={onRenderFailure}
+        onRenderFailure={onRenderFailure as HandlerFunction}
         hooks={hooks}
       />
     );
