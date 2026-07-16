@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "Node",
     "strict": true,
@@ -8,7 +7,10 @@
     "lib": ["es2019", "DOM"],
     "types": ["cypress", "node"],
     "allowJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "*": ["./*"]
+    }
   },
   "files": ["cypress/support/index.d.ts"],
   "include": ["cypress/**/*.ts", "./cypress.config.ts"],

@@ -43,8 +43,8 @@
     /* Completeness */
     "skipLibCheck": true,
 
-    "baseUrl": ".",
     "paths": {
+      "*": ["./*"],
       "@storybook-shared": ["./.storybook/shared"],
       "@superset-ui/core": ["./packages/superset-ui-core/src"],
       "@superset-ui/core/*": ["./packages/superset-ui-core/src/*"],
