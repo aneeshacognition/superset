@@ -62,9 +62,18 @@ jobs:
 
       - name: "Set up liccheck"
         run: |
-          uv pip install --system liccheck
+          # liccheck imports pkg_resources, which setuptools removed in 82.
+          # Install a setuptools that still ships pkg_resources for the checker
+          # itself; this is independent of the setuptools version pinned for
+          # Superset in requirements/base.txt.
+          uv pip install --system 'setuptools<82' liccheck
       - name: "Run liccheck"
         run: |
+          # base.txt pins setuptools (see requirements/base.in), but the checker
+          # must run on setuptools<82 for pkg_resources. Drop the setuptools line
+          # so its pin does not conflict with the checker's own setuptools during
+          # dependency resolution; setuptools' license is version-agnostic.
+          sed -i '/^setuptools==/d' requirements/base.txt
           # run the checks
           liccheck -R output.txt
           # Print the report
