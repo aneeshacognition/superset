@@ -38,6 +38,10 @@ export default defineConfig({
     openMode: 0,
   },
   e2e: {
+    // Preserve cookies/localStorage between tests within a spec so the single
+    // login performed in the `before` hook keeps the session authenticated.
+    // Replaces the removed `Cypress.Cookies.defaults({ preserve: 'session' })`.
+    testIsolation: false,
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
