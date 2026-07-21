@@ -28,10 +28,22 @@
     "rison": "^0.1.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-react": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
+    "@cypress/webpack-preprocessor": "^6.0.4",
     "@types/querystringify": "^2.0.0",
+    "babel-loader": "^10.1.1",
+    "buffer": "^6.0.3",
     "cypress": "^15.10.0",
     "eslint-plugin-cypress": "^3.5.0",
-    "tscw-config": "^1.1.2"
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "tscw-config": "^1.1.2",
+    "webpack": "^5.107.2"
   },
   "overrides": {
     "cypress": {
