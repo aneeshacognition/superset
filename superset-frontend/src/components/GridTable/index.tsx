@@ -146,7 +146,7 @@ export function GridTable<RecordType extends object>({
       ensureDomOrder: true,
       suppressFieldDotNotation: true,
       headerHeight: rowHeight,
-      rowSelection: 'multiple',
+      rowSelection: { mode: 'multiRow' },
       rowHeight,
     }),
     [rowHeight],
