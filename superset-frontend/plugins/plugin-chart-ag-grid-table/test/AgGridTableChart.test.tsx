@@ -219,11 +219,13 @@ test('AgGridTableChart renders with totals', async () => {
     expect(grid).toBeInTheDocument();
   });
 
-  const pinnedRows = document.querySelectorAll('.ag-floating-bottom .ag-row');
+  const pinnedRows = document.querySelectorAll(
+    '.ag-grid-pinned-bottom-rows .ag-row',
+  );
   expect(pinnedRows.length).toBeGreaterThan(0);
 
   const dataRows = document.querySelectorAll(
-    '.ag-body-viewport .ag-row:not(.ag-row-pinned)',
+    '.ag-grid-scrolling-container .ag-row:not(.ag-row-pinned)',
   );
   expect(dataRows.length).toBe(3);
 });
@@ -249,7 +251,7 @@ test('AgGridTableChart handles empty data', async () => {
   });
 
   const dataRows = document.querySelectorAll(
-    '.ag-center-cols-container .ag-row',
+    '.ag-grid-scrolling-container .ag-row',
   );
   expect(dataRows.length).toBe(0);
 
